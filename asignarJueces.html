@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asignar Jueces</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        body { background: #0f0f23; }
+        .ui-page { background: #0f0f23; }
+        .header-bar { background: linear-gradient(135deg, #1a1a3e, #2a2a5e); border-bottom: 3px solid #ffd700; }
+        .header-bar h1 { color: #ffd700; font-size: 18px; }
+        .list-container { margin: 10px; }
+        .list-container h3 { color: #ffd700; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin: 16px 0 8px; }
+        #torneoSelect { width: 100%; padding: 14px; border-radius: 10px; background: #1e1e42; color: #fff; border: 1px solid rgba(255,215,0,0.2); font-size: 16px; }
+        .ui-listview .ui-li-static { background: #1e1e42; color: #fff; border-color: rgba(255,255,255,0.05); }
+        .ui-listview .ui-li-divider { background: #2a2a5e; color: #ffd700; }
+        .ui-listview li .ui-btn { background: #1e1e42; color: #fff; border-color: rgba(255,255,255,0.05); }
+        .ui-listview li .ui-btn:hover { background: #2a2a5e; }
+    </style>
+    <script>
+    $(document).ready(function() {
+        cargarTorneos();
+        cargarJueces();
+
+        function cargarTorneos() {
+            $.ajax({
+                type: 'GET', url: 'getTorneos.php',
+                success: function(data) {
+                    try {
+                        var torneos = JSON.parse(data);
+                        var s = $('#torneoSelect'); s.empty();
+                        s.append('<option value="">Selecciona un Torneo</option>');
+                        if (Array.isArray(torneos)) {
+                            torneos.forEach(function(t) {
+                                s.append('<option value="' + t.idTorneo + '">' + t.nombre + '</option>');
+                            });
+                        }
+                    } catch(e) { console.error(e); }
+                }
+            });
+        }
+
+        function cargarJueces() {
+            $.ajax({
+                type: 'GET', url: 'getJueces.php',
+                success: function(data) {
+                    try {
+                        var jueces = JSON.parse(data);
+                        var l = $('#listJueces'); l.empty();
+                        if (Array.isArray(jueces)) {
+                            jueces.forEach(function(j) {
+                                l.append('<li data-icon="plus"><a href="#">' + j.nombre + ' ' + j.apellido + '</a></li>')
+                                 .find('li:last').attr('data-juez-id', j.id);
+                            });
+                            l.listview('refresh');
+                        }
+                    } catch(e) { console.error(e); }
+                }
+            });
+        }
+
+        function cargarJuecesTorneo(torneoId) {
+            $.ajax({
+                type: 'GET', url: 'getJuecesTorneo.php', data: { id_torneo: torneoId },
+                success: function(data) {
+                    try {
+                        var jueces = JSON.parse(data);
+                        var l = $('#selectedJueces'); l.empty();
+                        if (Array.isArray(jueces)) {
+                            jueces.forEach(function(j) {
+                                l.append('<li data-icon="minus"><a href="#">' + j.nombre + ' ' + j.apellido + '</a></li>')
+                                 .find('li:last').attr('data-juez-id', j.id);
+                            });
+                            l.listview('refresh');
+                        }
+                    } catch(e) { console.error(e); }
+                }
+            });
+        }
+
+        $('#torneoSelect').on('change', function() {
+            var id = $(this).val();
+            if (id > 0) { cargarJuecesTorneo(id); }
+        });
+
+        $('#listJueces').on('click', 'li', function() {
+            var juezId = $(this).attr('data-juez-id');
+            var juezText = $(this).text();
+            var torneoId = $('#torneoSelect').val();
+            if (!torneoId || torneoId <= 0) { alert('Selecciona un torneo'); return; }
+
+            $('#selectedJueces').append(
+                $('<li data-icon="minus"><a href="#">' + juezText + '</a></li>')
+                .attr('data-juez-id', juezId)
+            );
+            $(this).remove();
+            $('#listJueces').listview('refresh');
+            $('#selectedJueces').listview('refresh');
+
+            $.ajax({
+                type: 'POST', url: 'asignarJuezTorneo.php',
+                data: { id_torneo: torneoId, id_juez: juezId }
+            });
+        });
+
+        $('#selectedJueces').on('click', 'li', function() {
+            var juezId = $(this).attr('data-juez-id');
+            var juezText = $(this).text();
+            var torneoId = $('#torneoSelect').val();
+            if (!torneoId || torneoId <= 0) { alert('Selecciona un torneo'); return; }
+
+            $('#listJueces').append(
+                $('<li data-icon="plus"><a href="#">' + juezText + '</a></li>')
+                .attr('data-juez-id', juezId)
+            );
+            $(this).remove();
+            $('#listJueces').listview('refresh');
+            $('#selectedJueces').listview('refresh');
+
+            $.ajax({
+                type: 'POST', url: 'quitarJuezTorneo.php',
+                data: { id_torneo: torneoId, id_juez: juezId }
+            });
+        });
+    });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="mainPage">
+        <div data-role="header" class="header-bar">
+            <a href="index.php" class="ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-left" style="color:#fff;">Volver</a>
+            <h1>Asignar Jueces</h1>
+        </div>
+        <div role="main" class="ui-content" style="padding:0;">
+            <div class="list-container">
+                <label for="torneoSelect" style="color:#888; font-size:11px; text-transform:uppercase; letter-spacing:2px;">Torneo</label>
+                <select name="torneoSelect" id="torneoSelect"></select>
+
+                <h3>Jueces Disponibles</h3>
+                <ul id="listJueces" data-role="listview" data-filter="true" data-inset="true"></ul>
+
+                <h3>Jueces Asignados</h3>
+                <ul id="selectedJueces" data-role="listview" data-filter="true" data-inset="true"></ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

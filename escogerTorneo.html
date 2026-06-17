@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Torneos</title>
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+
+    <div data-role="page" id="page_torneos">
+        <div data-role="header" data-theme="a">
+            <h1>Selecciona un Torneo</h1>
+        </div>
+
+        <div data-role="content">
+            <!-- Lista de torneos con botones de radio -->
+            <form>
+                <div data-role="fieldcontain">
+                    <legend>Elige un torneo:</legend>
+
+                    <!-- Torneo 1 -->
+                    <input type="radio" name="torneo" id="torneo1" value="Torneo 1">
+                    <label for="torneo1">Torneo 1</label>
+
+                    <!-- Torneo 2 -->
+                    <input type="radio" name="torneo" id="torneo2" value="Torneo 2">
+                    <label for="torneo2">Torneo 2</label>
+
+                    <!-- Torneo 3 -->
+                    <input type="radio" name="torneo" id="torneo3" value="Torneo 3">
+                    <label for="torneo3">Torneo 3</label>
+
+                    <!-- Torneo 4 -->
+                    <input type="radio" name="torneo" id="torneo4" value="Torneo 4">
+                    <label for="torneo4">Torneo 4</label>
+                </div>
+
+                <center>
+                    <a href="#" data-role="button" data-inline="true" data-theme="b" id="submitSelection">Confirmar Selección</a>
+                </center>
+            </form>
+        </div>
+
+        <div data-role="footer" data-theme="a" data-position="fixed">
+            <h5>&copy; 2025 Torneos</h5>
+        </div>
+    </div>
+
+    <script>
+        $(document).on('click', '#submitSelection', function() {
+            // Obtenemos el torneo seleccionado
+            var selectedTorneo = $("input[name='torneo']:checked").val();
+
+            if (selectedTorneo) {
+                alert("Has seleccionado: " + selectedTorneo);
+            } else {
+                alert("Por favor, selecciona un torneo.");
+            }
+        });
+    </script>
+
+</body>
+</html>

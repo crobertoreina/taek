@@ -1,0 +1,35 @@
+wing: taek
+rooms:
+- name: backend
+  description: Files from db/
+  keywords:
+  - backend
+  - db
+- name: images
+  description: Files from images/
+  keywords:
+  - images
+  - images
+- name: index.redirect
+  description: Files from index.redirect/
+  keywords:
+  - index.redirect
+  - index.redirect
+- name: lib
+  description: Files from lib/
+  keywords:
+  - lib
+  - lib
+- name: old
+  description: Files from old/
+  keywords:
+  - old
+  - old
+- name: themes
+  description: Files from themes/
+  keywords:
+  - themes
+  - themes
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

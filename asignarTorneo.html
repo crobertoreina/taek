@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="lib/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="lib/jquery-1.11.1.min.js"></script>
+    <script src="lib/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        /* Asegúrate de que el CSS de jQuery Mobile se aplica a los elementos correctamente */
+    </style>
+    <script>
+    $(document).ready(function() {
+	
+		
+		
+		// Cargar los torneos en el ComboBox
+		function cargarTorneos()
+		{ 
+            $.ajax({
+                type: 'GET',
+                url: 'getTorneos.php',
+                success: function(data) {
+                    try {
+                        var torneos = JSON.parse(data); // Intenta parsear la respuesta como JSON
+                        var torneoSelect = $('#torneoSelect');
+                        torneoSelect.empty();
+                        torneoSelect.append('<option value="">Selecciona un Torneo</option>');
+                        if (Array.isArray(torneos)) {
+                            torneos.forEach(function(torneo) {
+                                torneoSelect.append('<option value="' + torneo.idTorneo + '">' + torneo.nombre + '</option>');
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Error al parsear los datos:", e);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener los torneos:', error);
+                }
+            });
+		}
+
+		// Cargar todos los participantes que no esten en el torneo
+		function cargarParticipantes()
+		{
+            $.ajax({
+                type: 'GET',
+                url: 'getParticipantesTodos.php',
+                success: function(data) {
+                    try {
+                        var participantes = typeof data === 'string' ? JSON.parse(data) : data;
+                        var participanteList = $('#listParticipantes');
+                        participanteList.empty();
+
+                        if (Array.isArray(participantes)) {
+                            participantes.forEach(function(participante) {
+                                // Crear un elemento de lista con el icono "+" y el nombre del participante
+                                participanteList.append(
+                                    $('<li data-icon="plus"><a href="#">' + participante.nombre + ' ' + participante.apellido + '</a></li>')
+                                    .attr('data-participante-id', participante.id) // Guardamos el id del participante
+                                    
+                                );
+                            });
+
+                            participanteList.listview('refresh'); // Refresca el listview de la lista de participantes
+                        }
+                    } catch (e) {
+                        console.error("Error al procesar participantes:", e);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error en la solicitud de participantes:', error);
+                }
+            });
+		}
+		
+		// Cargar todos los participantes que no esten en el torneo
+		function cargarParticipantesNoSeleccionados(torneoId)
+		{
+            $.ajax({
+                type: 'GET',
+                url: 'getParticipantesNoSeleccionados.php',
+				data: { torneoId: torneoId },
+                success: function(data) {
+                    try {
+                        var participantes = typeof data === 'string' ? JSON.parse(data) : data;
+                        var participanteList = $('#listParticipantes');
+                        participanteList.empty();
+
+                        if (Array.isArray(participantes)) {
+                            participantes.forEach(function(participante) {
+                                // Crear un elemento de lista con el icono "+" y el nombre del participante
+                                participanteList.append(
+                                    $('<li data-icon="plus"><a href="#">' + participante.nombre + ' ' + participante.apellido + '</a></li>')
+                                    .attr('data-participante-id', participante.id) // Guardamos el id del participante
+                                );
+                            });
+
+                            participanteList.listview('refresh'); // Refresca el listview de la lista de participantes
+                        }
+                    } catch (e) {
+                        console.error("Error al procesar participantes:", e);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error en la solicitud de participantes:', error);
+                }
+            });
+		}
+
+		//Quitar participante del Torneo
+		function sacarParticipanteDelTorneo()
+		{
+            $('#selectedParticipante').on('click', 'li', function() {
+                var participanteId = $(this).attr('data-participante-id');
+                var selectedParticipanteList = $('#selectedParticipante');
+
+                // Eliminar el participante de la lista de seleccionados
+                $(this).remove();
+
+                // Reinsertar el participante en la lista de "listParticipantes" con el icono "+"
+                var participanteText = $(this).text(); // Obtener el nombre y apellido del participante
+                $('#listParticipantes').append(
+                    $('<li data-icon="plus"><a href="#">' + participanteText + '</a></li>')
+                    .attr('data-participante-id', participanteId) // Guardamos el id del participante
+                    
+                );
+
+                // Refrescar ambas listas para que los estilos se apliquen correctamente
+                participanteList.listview('refresh');
+                selectedParticipanteList.listview('refresh');
+            });
+		}
+		// Función para cargar los participantes seleccionados de un torneo
+		function cargarParticipantesSeleccionados(torneoId) {
+			$.ajax({
+				type: 'GET',
+				url: 'getParticipantesSeleccionados.php', // Este archivo debe devolver los participantes asignados al torneo
+				data: { torneoId: torneoId },
+				success: function(data) {
+					try {
+						var participantesSeleccionados = JSON.parse(data);
+						var selectedParticipanteList = $('#selectedParticipante');
+						selectedParticipanteList.empty(); // Limpiar la lista de seleccionados
+
+						if (Array.isArray(participantesSeleccionados)) {
+							participantesSeleccionados.forEach(function(participante) {
+								// Crear un elemento de lista con el icono "-" para la lista de seleccionados
+								selectedParticipanteList.append(
+									$('<li data-icon="minus"><a href="#">' + participante.nombre + ' ' + participante.apellido + '</a></li>')
+									.attr('data-participante-id', participante.id) // Guardamos el id del participante
+									
+								);
+
+							});
+							selectedParticipanteList
+						}
+						selectedParticipanteList.listview('refresh');
+					} catch (e) {
+						console.error("Error al cargar los participantes seleccionados:", e);
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error('Error al cargar los participantes seleccionados:', error);
+				}
+			});
+		} 
+
+		//Llamar metodo agregarParticipanteTorneo()
+		function agregarParticipanteTorneo(torneoId,participanteId)
+		{
+			// Realizar AJAX para agregar el participante a la tabla torneoParticipantes
+			$.ajax({
+				type: 'POST',
+				url: 'agregarParticipanteTorneo.php',  // Este archivo añadirá el participante al torneo
+				data: {
+					torneoId: torneoId,
+					participanteId: participanteId
+				},
+				success: function(response) {
+					console.log('Participante agregado al torneo');
+				},
+				error: function(xhr, status, error) {
+					console.error('Error al agregar el participante:', error);
+				}
+			});
+		}
+		
+		//Llamar metodo agregarParticipanteTorneo()
+		function eliminarParticipanteTorneo(torneoId,participanteId)
+		{
+			// Realizar AJAX para agregar el participante a la tabla torneoParticipantes
+			$.ajax({
+				type: 'POST',
+				url: 'eliminarParticipanteTorneo.php',  // Este archivo añadirá el participante al torneo
+				data: {
+					torneoId: torneoId,
+					participanteId: participanteId
+				},
+				success: function(response) {
+					console.log('Participante eliminado con exito');
+				},
+				error: function(xhr, status, error) {
+					console.error('Error al eliminar el participante:', error);
+				}
+			});
+		}
+		
+		cargarTorneos();
+		cargarParticipantes();
+		// Cargar los participantes ya seleccionados cuando se elige un torneo
+		$('#torneoSelect').on('change', function() {
+			var torneoId = $(this).val();
+			if (torneoId > 0) {
+				cargarParticipantesSeleccionados(torneoId);
+				cargarParticipantesNoSeleccionados(torneoId);				
+			}
+		});
+		
+		// Guardar participante seleccionado en la tabla torneoParticipante
+		$('#listParticipantes').on('click', 'li', function() {
+			var participanteId = $(this).attr('data-participante-id');
+			var participanteText = $(this).text();
+			var torneoId = $('#torneoSelect').val();  // Obtener el id del torneo seleccionado
+			var selectedParticipanteList = $('#selectedParticipante');
+			var participanteList = $('#listParticipantes');
+
+			// Comprobar si el torneoId es mayor que cero
+			if (torneoId > 0) {
+				// Crear un elemento de lista con el icono "-" para la lista de seleccionados
+				selectedParticipanteList.append(
+					$('<li data-icon="minus"><a href="#">' + participanteText + '</a></li>')
+					.attr('data-participante-id', participanteId) // Guardamos el id del participante
+				);
+
+				// Eliminar el participante de la lista de participantes
+				$(this).remove();
+
+				//Llamar metodo agregarAlTorneo()
+				agregarParticipanteTorneo(torneoId,participanteId);
+
+				// Refrescar ambas listas para que los estilos se apliquen correctamente
+				participanteList.listview('refresh');
+				selectedParticipanteList.listview('refresh');
+			} else {
+				// Si no se ha seleccionado un torneo válido
+				alert('Por favor, selecciona un torneo.');
+			}
+		});
+		
+		// Eliminar participante seleccionado de la tabla torneoParticipante
+		$('#selectedParticipante').on('click', 'li', function() {
+			var participanteId = $(this).attr('data-participante-id');
+			var participanteText = $(this).text();
+			var torneoId = $('#torneoSelect').val();  // Obtener el id del torneo seleccionado
+			var participanteList = $('#listParticipantes');
+			var selectedParticipanteList = $('#selectedParticipante');
+
+			// Comprobar si el torneoId es mayor que cero
+			if (torneoId > 0) {
+			
+				// Crear un elemento de lista con el icono "+" para la lista de Participantes
+				participanteList.append(
+					$('<li data-icon="plus"><a href="#">' + participanteText + '</a></li>')
+					.attr('data-participante-id', participanteId) 
+				);
+
+				// Eliminar el participante de la lista de participantes
+				$(this).remove();
+			
+				//Llamar metodo eliminarDelTorneo()
+				eliminarParticipanteTorneo(torneoId,participanteId);
+				
+				//cargar Participantes a ambas listas desde la bd
+				//cargarParticipantesNoSeleccionados(torneoId);
+				//cargarParticipantesSeleccionados(torneoId);				
+
+				// Refrescar ambas listas para que los estilos se apliquen correctamente
+				participanteList.listview('refresh');
+				selectedParticipanteList.listview('refresh');
+			} else {
+				// Si no se ha seleccionado un torneo válido
+				alert('Por favor, selecciona un torneo.');
+			}
+		});
+		
+    });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="mainPage"	>
+        <div data-role="header">
+            <a href="#menu" class="ui-btn ui-btn-inline ui-icon-bars ui-btn-icon-left">Menú</a>
+            <h1 id="participantName">태권도</h1>
+            <a href="#rightPanel" class="ui-btn ui-btn-inline ui-icon-gear ui-btn-icon-right">Opciones</a>
+        </div>
+
+        <div role="main" class="ui-content">
+            <div data-role="content">        
+                <form id="torneoForm" method="POST" action="guardarTorneoParticipante.php">
+                    <div class="select-container">
+                        <label for="torneoSelect">Torneo:</label>
+                        <select name="torneoSelect" id="torneoSelect">
+                            <option value="">Selecciona un Torneo</option>
+                        </select>
+                    </div>
+                    <h3>Participantes</h3>
+                    <ul id="listParticipantes" data-role="listview" data-filter="true" data-inset="true" >
+					</ul>
+                    <h3>Participantes Seleccionados</h3>
+                    <ul id="selectedParticipante" data-role="listview" data-filter="true" data-inset="true" class="countries">
+					</ul>
+                </form>
+            </div>
+        </div>
+
+        <div data-role="footer" data-position="fixed" data-align="center">
+            <p style="text-align: center; margin: 2;">@CRR</p>
+        </div>
+    </div>
+</body>
+</html>

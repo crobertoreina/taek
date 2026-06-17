@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Puntuaciones - Torneo Taekwondo</title>
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.5.2/jquery.mobile-1.5.2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.5.2/jquery.mobile-1.5.2.min.js"></script>
+    <style>
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .ui-btn-b {
+            background-color: #f39c12;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div data-role="page" id="mainPage">
+    <div data-role="header">
+        <h1>Puntuaciones</h1>
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#participantsPage" class="ui-btn ui-btn-b">Participantes</a></li>
+                <li><a href="#judgesPage" class="ui-btn ui-btn-b">Jurados</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div role="main" class="ui-content">
+        <div id="puntos">4.0</div>
+        <div class="button-group">
+            <button id="sumar1" class="ui-btn ui-btn-b">Sumar 0.1</button>
+            <button id="sumar2" class="ui-btn ui-btn-b">Sumar 0.3</button>
+        </div>
+        <div class="button-group">
+            <button id="restar1" class="ui-btn ui-btn-b">Restar 0.1</button>
+            <button id="restar2" class="ui-btn ui-btn-b">Restar 0.3</button>
+        </div>
+        <a href="#resultadosPage" class="ui-btn ui-btn-b">Ver Resultado</a>
+    </div>
+
+    <div data-role="footer">
+        <h4><a href="#loginPage" class="ui-btn ui-btn-b">Regresar</a> <a href="#mainPage" class="ui-btn ui-btn-b">Inicio</a></h4>
+    </div>
+</div>
+
+<script>
+    let puntos = 4.0;
+
+    $('#sumar1').on('click', function() {
+        puntos = Math.min(4.0, puntos + 0.1);
+        $('#puntos').text(puntos.toFixed(1));
+    });
+
+    $('#sumar2').on('click', function() {
+        puntos = Math.min(4.0, puntos + 0.3);
+        $('#puntos').text(puntos.toFixed(1));
+    });
+
+    $('#restar1').on('click', function() {
+        puntos = Math.max(0.0, puntos - 0.1);
+        $('#puntos').text(puntos.toFixed(1));
+    });
+
+    $('#restar2').on('click', function() {
+        puntos = Math.max(0.0, puntos - 0.3);
+        $('#puntos').text(puntos.toFixed(1));
+    });
+</script>
+
+</body>
+</html>

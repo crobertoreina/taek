@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        /* Estilo para los botones con bordes redondeados */
+        .ui-btn-custom {
+            font-size: 20px; /* Tamaño de fuente */
+            padding: 20px; /* Espaciado interno del botón */
+            border-radius: 15px; /* Bordes redondeados */
+            width: 80%;  /* El ancho será más estrecho */
+            margin: 10px auto;  /* Centra el botón horizontalmente */
+            text-align: center; /* Centra el texto */
+            color: white; /* Texto blanco */
+            display: block; /* Asegura que los botones estén en bloque */
+        }
+
+        /* Colores específicos para los botones */
+        .btn-kyorugi {
+            background-color: red; /* Rojo para Kyorugi */
+        }
+
+        .btn-poomsae {
+            background-color: blue; /* Azul para Poomae */
+        }
+
+        .btn-freestyle {
+            background-color: green; /* Verde para Freestyle */
+        }
+
+        /* Asegura que el contenido no se sobrepase */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: calc(100vh - 60px - 50px);  /* Restamos altura del header y footer para usar más espacio */
+            padding: 0;  /* Elimina el padding para reducir espacio */
+        }
+
+        .ui-content {
+            padding: 0;
+        }
+
+        
+
+        
+    </style>
+</head>
+<body>
+    <div data-role="page" id="mainPage">
+        <div data-role="header">
+            <a href="#menu" class="ui-btn ui-btn-inline ui-icon-bars ui-btn-icon-left">Menú</a>
+            <h1 id="participantName">태권도</h1>
+            <a href="#rightPanel" class="ui-btn ui-btn-inline ui-icon-gear ui-btn-icon-right">Opciones</a>
+        </div>
+
+        <!-- Menu lateral -->
+        <div data-role="panel" id="menu" data-position="left" data-display="overlay" data-dismissible="true">
+            <div data-role="header"></div>
+            <div>
+                <ul>
+                    <li><a href="#participantesPage" data-rel="close">Participantes</a></li>
+                    <li><a href="#juradosPage" data-rel="close">Jurados</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panel derecho de opciones -->
+        <div data-role="panel" id="rightPanel" data-position="right" data-display="overlay" data-dismissible="true">
+            <div data-role="header">
+                <h1>Opciones</h1>
+            </div>
+            <div>
+                <ul>
+                    <li><a href="#configuracionPage" data-rel="close">Configuración</a></li>
+                    <li><a href="#ayudaPage" data-rel="close">Ayuda</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div role="main" class="ui-content">
+            <div class="button-container">
+                <!-- Botón Kyorugi -->
+                <a href="#kyorugiPage" class="ui-btn ui-btn-custom btn-kyorugi" style="color:white; background-color:red";>Kyorugi</a>
+                <!-- Botón Poonsae -->
+                <a href="#poomsaePage" class="ui-btn ui-btn-custom btn-poomsae" style="color:white; background-color:blue";>Poomsae</a>
+                <!-- Botón Freestyle Poomsae -->
+                <a href="#freestylePage" class="ui-btn ui-btn-custom btn-freestyle" style="color:white; background-color:green";>Freestyle Poomsae</a>
+				
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div data-role="footer">
+            <a href="#salir" class="footer-btn ui-btn ui-btn-inline ui-icon-power ui-btn-icon-left">Salir</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        /* Ajuste para los botones */
+        .button-group {
+            display: flex;
+            justify-content: center;  /* Centra los botones */
+            gap: 2px;  /* Reduce el espacio horizontal entre los botones */
+            margin-top: 1px; /* Acerca los botones a la parte superior */
+        }
+
+        .button-group button {
+            width: 48%; /* Ajusta el ancho de los botones para que estén más cerca */
+            height: 120px;  /* Hace que los botones sean más altos */
+            font-size: 24px;  /* Aumenta el tamaño del texto */
+        }
+
+        #puntos {
+            font-size: 120px; /* Tamaño grande para el puntaje */
+            text-align: center;
+            margin-top: 4px; /* Eleva el puntaje para estar más cerca de los botones */
+        }
+
+        /* Sección principal, ajusta la distancia desde el top */
+        .ui-content {
+            padding-top: 4px; /* Acerca la sección principal a la parte superior */
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            // Cargar datos del participante
+            $.ajax({
+                type: 'GET',
+                url: 'get_participant.php',  // Archivo PHP que obtiene el participante
+                success: function(data) {
+                    var participant = JSON.parse(data);
+                    $('#participantName').text(participant.nombre + ' ' + participant.apellido);
+                }
+            });
+
+            // Inicializamos el puntaje
+            let puntos = 4.0;
+            $('#puntos').text(puntos.toFixed(1));
+
+            // Lógica para sumar puntos
+            $('#sumar1').on('click', function() {
+                puntos = Math.min(4.0, puntos + 0.1);
+                $('#puntos').text(puntos.toFixed(1));
+            });
+
+            $('#sumar2').on('click', function() {
+                puntos = Math.min(4.0, puntos + 0.3);
+                $('#puntos').text(puntos.toFixed(1));
+            });
+
+            // Lógica para restar puntos
+            $('#restar1').on('click', function() {
+                puntos = Math.max(0.0, puntos - 0.1);
+                $('#puntos').text(puntos.toFixed(1));
+            });
+
+            $('#restar2').on('click', function() {
+                puntos = Math.max(0.0, puntos - 0.3);
+                $('#puntos').text(puntos.toFixed(1));
+            });
+
+            // Guardar el resultado de la evaluación
+            $('#saveResult').on('click', function() {
+                var id_participante = 1; // Se debe pasar el ID del participante de alguna manera
+                $.ajax({
+                    type: 'POST',
+                    url: 'evaluar.php',
+                    data: {
+                        id_participante: id_participante,
+                        puntos: puntos
+                    },
+                    success: function(response) {
+                        alert('Resultado guardado con éxito');
+                    },
+                    error: function() {
+                        alert('Hubo un error al guardar el resultado');
+                    }
+                });
+            });
+
+            // Lógica de cierre de sesión
+            $('#logout-btn').on('click', function() {
+                window.location.href = 'login.html';  // Redirigir al login
+            });
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="mainPage">
+        <div data-role="header" data-position="fixed">
+            <a href="#menu" class="ui-btn ui-btn-inline ui-icon-bars ui-btn-icon-left">Menú</a>
+            <h1 id="participantName"></h1>
+            <a href="#rightPanel" class="ui-btn ui-btn-inline ui-icon-gear ui-btn-icon-right">Opciones</a>
+        </div>
+        <div data-role="panel" id="menu" data-position="left" data-display="overlay" data-dismissible="true">
+            <div data-role="header"></div>	
+            <div>			
+                <ul>
+                    <li><a href="#participantesPage" data-rel="close">Participantes</a></li>
+                    <li><a href="#juradosPage" data-rel="close">Jurados</a></li>
+                </ul>
+            </div>
+            <div data-role="footer" align="right">
+                <a href="#" data-rel="close" data-role="button" data-icon="delete" data-iconpos="notext" data-position="right" data-inline="true">Delete</a>
+            </div>
+        </div>
+        <div data-role="panel" id="rightPanel" data-position="right" data-display="overlay" data-dismissible="true">
+            <div data-role="header">
+                <h1>Opciones</h1>
+            </div>
+            <div>
+                <ul>
+                    <li><a href="#configuracionPage" data-rel="close">Configuración</a></li>
+                    <li><a href="#ayudaPage" data-rel="close">Ayuda</a></li>
+                </ul>
+            </div>
+            <div data-role="footer" align="left">
+                <a href="#" data-rel="close" data-role="button" data-icon="delete" data-iconpos="notext" data-position="left" data-inline="true">Delete</a>
+            </div>
+        </div>
+        <div role="main" class="ui-content">
+            <div id="puntos">4.0</div>
+            <div class="button-group">
+                <button id="sumar1" class="ui-btn ui-btn-b">+0.1</button>
+                <button id="sumar2" class="ui-btn ui-btn-b">+0.3</button>
+            </div>
+            <div class="button-group">
+                <button id="restar1" class="ui-btn ui-btn-b">-0.1</button>
+                <button id="restar2" class="ui-btn ui-btn-b">-0.3</button>
+            </div>
+            <button id="saveResult" class="ui-btn ui-btn-b">Guardar Resultado</button>
+        </div>
+        <div data-role="footer" data-position="fixed">
+			<a href="#salir" class="ui-btn ui-btn-inline ui-icon-power ui-btn-icon-left">Salir</a>
+		</div>
+    </div>
+
+    <!-- Página de Participantes -->
+    <div data-role="page" id="participantesPage">
+        <div data-role="header">
+            <h1>Participantes</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <form id="participanteForm">
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" id="nombre" placeholder="Nombre">
+                <label for="apellido">Apellido:</label>
+                <input type="text" name="apellido" id="apellido" placeholder="Apellido">
+                <label for="edad">Edad:</label>
+                <input type="number" name="edad" id="edad" placeholder="Edad">
+                <label for="telefono">Teléfono:</label>
+                <input type="text" name="telefono" id="telefono" placeholder="Teléfono">
+                <label for="ciudad">Ciudad:</label>
+                <input type="text" name="ciudad" id="ciudad" placeholder="Ciudad">
+                <button type="submit" class="ui-btn ui-btn-b">Guardar Participante</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Página de Jurados -->
+    <div data-role="page" id="juradosPage">
+        <div data-role="header">
+            <h1>Jurados</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <form id="juradoForm">
+                <label for="nombreJurado">Nombre:</label>
+                <input type="text" name="nombreJurado" id="nombreJurado" placeholder="Nombre">
+                <label for="apellidoJurado">Apellido:</label>
+                <input type="text" name="apellidoJurado" id="apellidoJurado" placeholder="Apellido">
+                <label for="telefonoJurado">Teléfono:</label>
+                <input type="text" name="telefonoJurado" id="telefonoJurado" placeholder="Teléfono">
+                <label for="ciudadJurado">Ciudad:</label>
+                <input type="text" name="ciudadJurado" id="ciudadJurado" placeholder="Ciudad">
+                <button type="submit" class="ui-btn ui-btn-b">Guardar Jurado</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Página de Configuración -->
+    <div data-role="page" id="configuracionPage">
+        <div data-role="header">
+            <h1>Configuración</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <form id="configuracionForm">
+                <label for="tema">Tema:</label>
+                <select name="tema" id="tema">
+                    <option value="light">Claro</option>
+                    <option value="dark">Oscuro</option>
+                </select>
+                <button type="submit" class="ui-btn ui-btn-b">Guardar Configuración</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Página de Ayuda -->
+    <div data-role="page" id="ayudaPage">
+        <div data-role="header">
+            <h1>Ayuda</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <p>Aquí puedes encontrar información de ayuda sobre cómo usar la aplicación.</p>
+        </div>
+    </div>
+</body>
+</html>

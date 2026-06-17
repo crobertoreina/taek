@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jQuery Mobile: Theme Download</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <style>
+        /* Estilo para el contenedor del login */
+        #login-container {
+            width: 300px;
+            padding: 20px;
+            margin: 50px auto;
+            border: 2px solid #0078d4; /* Color de borde */
+            border-radius: 10px; /* Bordes redondeados */
+            background-color: #f9f9f9; /* Fondo gris claro */
+        }
+        /* Estilo para los campos del formulario */
+        #login-container input[type="text"], 
+        #login-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        /* Estilo para el botón de login */
+        #login-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        #login-container input[type="submit"]:hover {
+            background-color: #005bb5; /* Color al pasar el mouse */
+        }
+        /* Estilo para los mensajes de error */
+        #add_err {
+            text-align: center;
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+    $("#btnLogin").click(function(event) {
+        event.preventDefault(); // Evitar el envío del formulario por el método tradicional
+        
+        var username = $("#username").val();
+        var password = $("#password").val();
+        
+        // Mostrar los valores capturados en la consola
+        console.log("Username: " + username);
+        console.log("Password: " + password);
+        
+        $.ajax({
+            type: 'POST',
+            url: "login.php",  // Verifica que la ruta sea correcta
+            data: { username: username, password: password },
+            beforeSend: function() {
+                $("#add_err").html("<img src='images/kicking-spinning.gif' />"); // Mostrar un loader antes de hacer la petición
+            },
+            success: function(data) {
+                console.log("Respuesta desde login.php: " + data);  // Ver respuesta del servidor
+                if (data == 'true') {
+                    window.location.href = "index.php"; // Redirigir a la página principal
+                } else {
+                    $("#add_err").html("<img src='images/icons-png/alert-black.png' />Wrong Username or Password!!"); // Mostrar un mensaje de error
+                }
+            },
+            error: function(xhr, status, error) {
+                $("#add_err").html("<img src='images/icons-png/alert-black.png' />Error: " + error); // Manejo de errores en la petición
+            }
+        });
+        return false; // Evitar que el formulario se envíe tradicionalmente
+    });
+});
+
+    </script>
+</head>
+<body>
+    <div data-role="page" id="login">
+        <div data-role="header" data-theme="a" >
+            <h1>Login</h1>
+        </div>
+        <div data-role="content">
+            <div id="login-container">
+                <form id="add_err">
+                    <div data-role="fieldcontain">
+                        <input type="text" name="username" id="username" value="" placeholder="Username" />        
+                        <input name="password" type="password" id="password" placeholder="Password" value="" maxlength="10" />
+                    </div>
+                    <input name="Submit" type="submit" id="btnLogin" value="Login" />        
+                </form>
+                <div id="add_err"></div> <!-- Aquí se mostrará el mensaje de error o el loader -->
+            </div>
+        </div>
+        <div data-role="footer" data-theme="a" data-position="fixed">
+            <h5>&copy; crr 2025 </h5>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        
+    </style>
+</head>
+<body>
+
+    <!-- Pagina Lista de Productos -->
+    <section data-role="page" id="pag_lista_productos">
+        <header data-role="header">
+            <h1>Lista de Productos</h1>
+        </header>
+		
+		
+		<!-- ------------------------------------------------------------------------------------ -->
+        <div data-role="content">
+            <!-- Botón para agregar un producto -->
+            <div align="right" data-type="horizontal" data-role="controlgroup" data-mini='true'>
+			<!-- Boton nuevo participante -->
+                <a href="#nuevoParticipante" data-role="button" data-icon="info" data-iconpos="left" 
+				data-rel="dialog" data-transition="pop" id="contac">Nota de Amor</a>
+            </div>
+            <!-- Lista de productos -->
+            <div data-role="collapsibleset" id="sitio_lista">
+                <div data-role='collapsible' ng-repeat="elemento in lista_productos">
+                    <h3>{{elemento.nombre}}</h3>
+                    <form>
+                        <label for='tipo'>Tipo:</label>
+                        <input type='text' id='tipo' value='{{elemento.tipo}}' disabled>
+                        <label for='categoria'>Categoria:</label>
+                        <input type='text' id='categoria' value='{{elemento.categoria}}' disabled>
+                        <label for='udm'>UDM:</label>
+                        <input type='text' id='udm' value='{{elemento.udm}}' disabled>
+                        <label for='p_venta'>Precio Venta:</label>
+                        <input type='text' id='p_venta' value='{{elemento.p_venta}}' disabled>
+                        <label for='p_compra'>Precio Compra:</label>
+                        <input type='text' id='p_compra' value='{{elemento.p_compra}}' disabled>
+                        <!-- Botones en horizontal -->
+                        <div data-role="controlgroup" data-type="horizontal">
+                            <a href="#edit_product" data-role="button" ind_mod="{{index}}" class='button_mod'>Modificar</a>
+                            <a href="#aviso_borrar" data-role="button" ind_del="{{index}}" class='button_del'>Eliminar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Panel para agregar un nuevo participante -->
+    <div data-role="page" id="nuevoParticipante" data-position="center" data-display="overlay" data-theme="b">
+        <div data-role="header">
+            <h1>Agregar Participante</h1>
+        </div>
+        <div data-role="content">
+            <form id="form_agregar_participante">
+                <label for="nombre">Nombre del Participante:</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Nombre del participante" required>
+
+                <label for="tipo">Tipo:</label>
+                <input type="text" id="tipo" name="tipo" placeholder="Tipo" required>
+
+                <label for="categoria">Categoria:</label>
+                <input type="text" id="categoria" name="categoria" placeholder="Categoria" required>
+
+                <label for="udm">UDM:</label>
+                <input type="text" id="udm" name="udm" placeholder="UDM" required>
+
+                <label for="p_venta">Precio de Venta:</label>
+                <input type="number" id="p_venta" name="p_venta" placeholder="Precio de Venta" required>
+
+                <label for="p_compra">Precio de Compra:</label>
+                <input type="number" id="p_compra" name="p_compra" placeholder="Precio de Compra" required>
+
+                <button type="submit" data-role="button">Agregar</button>
+                <a href="#pag_lista_productos" data-role="button" data-rel="back">Cancelar</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dialogo de confirmación para eliminar -->
+    <div data-role="page" id="aviso_borrar">
+        <div data-role="header">
+            <h1>Confirmar Eliminación</h1>
+        </div>
+        <div data-role="content">
+            <p>¿Estás seguro de que deseas eliminar este participante?</p>
+            <a href="#" data-role="button" id="btn_confirmar_eliminar">Eliminar</a>
+            <a href="#pag_lista_productos" data-role="button" data-rel="back">Cancelar</a>
+        </div>
+    </div>
+
+</body>
+</html>

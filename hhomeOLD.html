@@ -1,0 +1,56 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>jQuery Mobile: Theme Download</title>
+	<link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script>
+    $(document).ready(function() {
+      $("#btnLogin").click(function() {
+        username=$("#username").val();
+        password=$("#password").val();
+        $.ajax({
+            type:'POST',
+            url:"login.php",
+            data:"username="+username+"&password="+password,
+            success: function(data){
+                    if(data=='true'){
+                            window.location ( "hhome.html");                                
+                        } else {
+                                $("#add_err").html("<img src='images/icons-png/alert-black.png' />Wrong Username or Password!!");
+                            }
+                },beforeSend: function()
+                {
+                    $("#add_err").html("<img src='images/ajax-loader.gif' />")
+                    }
+        });
+        return false;
+});
+});
+</script>
+</head> 
+  <body> 
+
+    
+	
+	<div data-role="page" id="main">
+      <div data-role="header" data-theme="b">
+         <h1>Evaluacion</h1>
+      </div>
+      <div data-role="content">
+        <div data-role="controlgroup" data-type="horizontal">
+			<a href="#" data-role="button">Yes</a>
+			<a href="#" data-role="button">No</a>
+		</div>
+     </div>
+     <div data-role="footer" data-theme="b">
+         <h5>&copy; 2014 </h5>
+     </div>
+    </div>
+
+</body>
+</html>

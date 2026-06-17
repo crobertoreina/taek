@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+		/* Asegura que los labels estén sobre los selects */
+		[data-role="fieldcontain"] label {
+			display: block;  /* El label se muestra como bloque */
+			margin-bottom: 5px;  /* Espacio debajo del label */
+		}
+
+		select {
+			width: 100%;  /* El select ocupa todo el ancho disponible */
+			padding: 30px; /* Puedes ajustar el padding para mayor comodidad */
+			font-size: 16px; /* Tamaño de la fuente */
+		}
+	</style>
+    <script>
+        $(document).ready(function() {
+				// Cargar los torneos en el primer ComboBox
+				$.ajax({
+					type: 'GET',
+					url: 'getTorneos.php',
+					success: function(data) {
+						console.log(data);
+						try {
+							var torneos = JSON.parse(data); // Intenta parsear la respuesta como JSON
+							var torneoSelect = $('#torneoSelect');
+							torneoSelect.empty();
+							torneoSelect.append('<option value="">Selecciona un Torneo</option>');
+							if (Array.isArray(torneos)) {
+								torneos.forEach(function(torneo) {
+									torneoSelect.append('<option value="' + torneo.idTorneo + '">' + torneo.nombre + '</option>');
+								});
+							} else {
+								console.error('Error: Los datos de torneos no son un array.');
+							}
+						} catch (e) {
+							console.error("Error al parsear los datos:", e);
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error('Error al obtener los torneos:', error);
+						console.log("Respuesta completa del servidor:", xhr.responseText);  // Muestra la respuesta completa
+					}
+				});
+
+				// Cuando se selecciona un torneo, cargar los participantes correspondientes
+				$('#torneoSelect').on('change', function() {
+					var torneoId = $(this).val();
+
+					if (torneoId > 0) {
+						$.ajax({
+						type: 'GET',
+						url: 'getParticipantes.php',
+						data: { torneo_id: torneoId },
+						success: function(data) {
+							console.log("Respuesta completa del servidor:", data);  // Agrega este log
+							try {
+								var participantes = typeof data === 'string' ? JSON.parse(data) : data;
+
+								console.log("Participantes recibidos:", participantes);
+								
+								var participanteSelect = $('#participanteSelect');
+								participanteSelect.empty().append('<option value="">Selecciona participante</option>');
+								
+								if (Array.isArray(participantes)) {
+									participantes.forEach(function(participante) {
+										participanteSelect.append(
+											$('<option></option>').val(participante.id).text(participante.nombre)
+										);
+									});
+								} else {
+									console.error("La respuesta no es un array:", participantes);
+								}
+							} catch (e) {
+								console.error("Error al procesar participantes:", e);
+							}
+						},
+						error: function(xhr, status, error) {
+							console.error('Error en la solicitud:', error);
+						}
+					});
+					} else {
+						$('#participanteSelect').empty();
+					}
+				});
+			
+
+
+            // Lógica para enviar los datos seleccionados
+            $('#submitBtn').on('click', function() {
+                var torneoId = $('#torneoSelect').val();
+                var participanteId = $('#participanteSelect').val();
+                if (torneoId && participanteId) {
+                    alert('Torneo seleccionado: ' + torneoId + ', Participante seleccionado: ' + participanteId);
+                } else {
+                    alert('Por favor, selecciona un torneo y un participante.');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page" id="mainPage">
+        <div data-role="header">
+            <a href="#menu" class="ui-btn ui-btn-inline ui-icon-bars ui-btn-icon-left">Menú</a>
+            <h1 id="participantName">태권도</h1>
+            <a href="#rightPanel" class="ui-btn ui-btn-inline ui-icon-gear ui-btn-icon-right">Opciones</a>
+        </div>
+        <div data-role="panel" id="menu" data-position="left" data-display="overlay" data-dismissible="true">
+            <div data-role="header"></div>    
+            <div>            
+                <ul>
+                    <li><a href="#participantesPage" data-rel="close">Participantes</a></li>
+                    <li><a href="#juradosPage" data-rel="close">Jurados</a></li>
+                </ul>
+            </div>
+            <div data-role="footer" align="right">
+                <a href="#" data-rel="close" data-role="button" data-icon="delete" data-iconpos="notext" data-position="right" data-inline="true">Delete</a>
+            </div>
+        </div>
+        <div data-role="panel" id="rightPanel" data-position="right" data-display="overlay" data-dismissible="true">
+            <div data-role="header">
+                <h1>Opciones</h1>
+            </div>
+            <div>
+                <ul>
+                    <li><a href="#configuracionPage" data-rel="close">Configuración</a></li>
+                    <li><a href="#ayudaPage" data-rel="close">Ayuda</a></li>
+                </ul>
+            </div>
+            <div data-role="footer" align="left">
+                <a href="#" data-rel="close" data-role="button" data-icon="delete" data-iconpos="notext" data-position="left" data-inline="true">Delete</a>
+            </div>
+        </div>
+        <div role="main" class="ui-content">		
+		<form id="torneoForm" id="form-listview">
+            <div class="select-container">	
+			
+				<label for="torneoSelect">Torneo:</label>
+				<select name="torneoSelect" id="torneoSelect" >
+					<option value="">Selecciona</option>
+				</select>
+
+                
+				<label for="participanteSelect">Participante:</label>				    
+				<select name="participanteSelect" id="participanteSelect">
+				  <option value="">Selecciona</option>
+			   </select>
+				
+            </div>
+            <center><button id="submitBtn" class="ui-btn ui-btn-b">Enviar</button></center>
+        </div>
+        <div data-role="footer" data-position="fixed" data-align="center">
+            <p style="text-align: center; margin: 2;">@CRR</p>
+        </div>
+    </div>
+</body>
+</html>

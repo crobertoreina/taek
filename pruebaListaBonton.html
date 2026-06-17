@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+<div data-role="content"> 
+
+ <div data-role="controlgroup" data-type="horizontal" class="TheContainer">
+ <a data-role="button" class="midButton" data-role="button" data-corners="false">stretch to the page width?</a> 
+    <input type="radio" name="radio-choice-b" id="radio-choice-c" value="list" checked="checked" data-corners="none" />
+    <label for="radio-choice-c">Left</label> 
+
+    <input type="radio" name="radio-choice-b" id="radio-choice-e" value="gallery" />
+    <label for="radio-choice-e">Right</label>
+</div>
+
+.TheContainer {
+    height: 20px;
+}
+.TheContainer .midButton {
+    position: absolute;
+    top: 7px;
+    left: 87px;
+    right: 87px;
+}
+.TheContainer .ui-radio {
+    position: absolute;
+    top: 7px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+.TheContainer .ui-radio:first-child {
+    left: 0px;
+}
+.TheContainer .ui-radio:last-child {
+    right: 0px;
+}
+</div>
+
+
+
+
+</body>

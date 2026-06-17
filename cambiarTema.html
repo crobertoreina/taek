@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Configuración de Tema</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        .settings-container {
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+            margin: 50px auto;
+            border: 2px solid #0078d4;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div data-role="page" id="configuracion">
+        <div data-role="header" data-theme="a">
+            <h1>Seleccionar Tema</h1>
+        </div>
+        <div data-role="content">
+            <div class="settings-container">
+                <h3>Elige un tema:</h3>
+                <form id="themeForm">
+                    <label for="theme_a">
+                        <input type="radio" name="theme" id="theme_a" value="a" /> Tema A
+                    </label><br>
+                    <label for="theme_b">
+                        <input type="radio" name="theme" id="theme_b" value="b" /> Tema B
+                    </label><br>
+                    <label for="theme_c">
+                        <input type="radio" name="theme" id="theme_c" value="c" /> Tema C
+                    </label><br><br>
+                    <button type="submit" data-theme="a">Guardar Preferencia</button>
+                </form>
+            </div>
+        </div>
+        <div data-role="footer" data-theme="a" data-position="fixed">
+            <h5>&copy; crr 2025</h5>
+        </div>
+    </div>
+
+    <script>
+        // Función para aplicar el tema guardado
+        function aplicarTema() {
+            var theme = localStorage.getItem('theme');
+            if (theme) {
+                // Cambiar el atributo data-theme en todas las páginas
+                $('div[data-role="page"]').each(function() {
+                    $(this).attr('data-theme', theme);
+                });
+                $('#' + theme).prop('checked', true); // Seleccionar el tema en el formulario
+            } else {
+                // Si no se ha guardado ningún tema, establecer tema 'a' por defecto
+                $('div[data-role="page"]').each(function() {
+                    $(this).attr('data-theme', 'a');
+                });
+                $('#theme_a').prop('checked', true);
+            }
+        }
+
+        // Guardar preferencia de tema cuando el formulario es enviado
+        $('#themeForm').submit(function(event) {
+            event.preventDefault(); // Evitar que el formulario se envíe
+            var selectedTheme = $('input[name="theme"]:checked').val();
+            localStorage.setItem('theme', selectedTheme); // Guardar tema en localStorage
+            aplicarTema(); // Aplicar el nuevo tema
+        });
+
+        // Aplicar el tema cuando se carga la página
+        $(document).on('pagecreate', function() {
+            aplicarTema();
+        });
+    </script>
+</body>
+</html>

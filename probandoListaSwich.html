@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluación</title>
+    <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
+    <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        /* Asegúrate de que el CSS de jQuery Mobile se aplica a los elementos correctamente */
+    </style>
+</head>
+<body>
+    <div data-role="page">
+        <div data-role="header">
+            <h1>Lista de Participantes</h1>
+        </div>
+
+        <div role="main" class="ui-content">
+            <ul id="listParticipantes" data-role="listview" data-inset="true">
+                <li>
+                    <a href="#">
+                        Juan Pérez
+                        <label for="switch1" class="ui-hidden-accessible">Encender/Apagar</label>
+                        <select name="switch1" id="switch1" data-role="slider">
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
+                        </select>
+                    </a>
+                </li>
+                
+                    
+                        Ana López
+                        
+                        <select name="switch2" id="switch2" data-role="slider" data-position="inline">
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
+                        </select>
+                    
+                <li>
+                    <a href="#">
+                        Carlos García
+                        <label for="switch3" class="ui-hidden-accessible">Encender/Apagar</label>
+                        <select name="switch3" id="switch3" data-role="slider">
+                            <option value="off">Off</option>
+                            <option value="on">On</option>
+                        </select>
+                    </a>
+                </li>
+            </ul>
+			
+			<fieldset data-role="controlgroup">
+	<legend>Choose a pet:</legend>
+     	<input type="radio" name="radio-choice" id="radio-choice-1" value="choice-1" checked="checked" />
+     	<label for="radio-choice-1">Cat</label>
+
+     	<input type="radio" name="radio-choice" id="radio-choice-2" value="choice-2"  />
+     	<label for="radio-choice-2">Dog</label>
+
+     	<input type="radio" name="radio-choice" id="radio-choice-3" value="choice-3"  />
+     	<label for="radio-choice-3">Hamster</label>
+
+     	<input type="radio" name="radio-choice" id="radio-choice-4" value="choice-4"  />
+     	<label for="radio-choice-4">Lizard</label>
+</fieldset>
+			
+			
+			
+        </div>
+
+        <div data-role="footer">
+            <p>@CRR - Lista con Switches</p>
+        </div>
+    </div>
+
+    <script>
+        $(document).on('change', '#switch1, #switch2, #switch3', function() {
+            var participante = $(this).closest('a').text().trim(); // Obtener el nombre del participante
+            var estado = $(this).val(); // Obtener el valor del switch (on/off)
+
+            if (estado === 'on') {
+                console.log(participante + " está ACTIVADO");
+            } else {
+                console.log(participante + " está DESACTIVADO");
+            }
+        });
+    </script>
+</body>
+</html>
