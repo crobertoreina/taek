@@ -37,20 +37,36 @@ else if( $_SESSION['user_level'] === 1 )
         .admin-header { background: linear-gradient(135deg, #4caf50, #388e3c); border-bottom: 3px solid #ffeb3b; }
         .admin-header h1 { color: #fff; text-shadow: none; }
         .admin-header .ui-btn { color: #fff !important; background: rgba(255,255,255,0.15) !important; border: none !important; }
-        .torneo-card { display:flex; align-items:center; padding:12px 14px; margin:6px 0; border-radius:10px; background:#fff; border:1px solid #e0e0e0; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-        .torneo-card.activo { border-left:4px solid #4caf50; }
-        .torneo-card.inactivo { border-left:4px solid #bbb; opacity:0.7; }
+        .dashboard-section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; padding:10px 4px 6px; margin:20px 0 6px; }
+        .dashboard-section-title.activos { color:#2e7d32; border-bottom:2px solid #4caf50; }
+        .dashboard-section-title.inactivos { color:#757575; border-bottom:2px solid #bdbdbd; }
+        .torneo-card { display:flex; align-items:center; padding:16px 18px; margin:8px 0; border-radius:14px; background:#fff; border:1px solid #e8e8e8; box-shadow:0 2px 8px rgba(0,0,0,0.04); transition:all 0.2s ease; position:relative; overflow:hidden; }
+        .torneo-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.08); transform:translateY(-1px); }
+        .torneo-card.activo { border-left:5px solid #4caf50; }
+        .torneo-card.activo::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #4caf50, #81c784); opacity:0.5; }
+        .torneo-card.inactivo { border-left:5px solid #bdbdbd; opacity:0.75; }
+        .torneo-card.inactivo::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #bdbdbd, #e0e0e0); opacity:0.4; }
+        .torneo-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-right:14px; font-size:18px; flex-shrink:0; }
+        .torneo-card.activo .torneo-icon { background:linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+        .torneo-card.inactivo .torneo-icon { background:linear-gradient(135deg, #f5f5f5, #eeeeee); }
         .torneo-info { flex:1; min-width:0; }
-        .torneo-info strong { font-size:15px; color:#333; }
-        .torneo-detalle { font-size:12px; color:#999; }
-        .torneo-status { margin:0 10px; }
+        .torneo-info strong { font-size:15px; color:#222; display:block; margin-bottom:2px; }
+        .torneo-detalle { font-size:12px; color:#999; display:flex; align-items:center; gap:4px; }
+        .torneo-detalle span { display:inline-flex; align-items:center; gap:2px; }
+        .torneo-status { margin:0 12px; }
         .torneo-accion { flex-shrink:0; }
-        .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; text-transform:uppercase; }
-        .badge.activo { background:#e8f5e9; color:#2e7d32; }
-        .badge.inactivo { background:#f5f5f5; color:#888; }
-        .btn-toggle { display:inline-block; padding:6px 14px; border-radius:6px; font-size:12px; text-decoration:none; font-weight:600; }
-        .torneo-card.activo .btn-toggle { background:#ffebee; color:#c62828; }
-        .torneo-card.inactivo .btn-toggle { background:#e8f5e9; color:#2e7d32; }
+        .badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+        .badge.activo { background:linear-gradient(135deg, #e8f5e9, #c8e6c9); color:#2e7d32; box-shadow:0 1px 3px rgba(76,175,80,0.15); }
+        .badge.inactivo { background:linear-gradient(135deg, #f5f5f5, #e0e0e0); color:#757575; }
+        .btn-toggle { display:inline-block; padding:7px 16px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:600; border:none; cursor:pointer; transition:all 0.15s ease; }
+        .btn-toggle:hover { transform:scale(1.04); }
+        .torneo-card.activo .btn-toggle { background:#ffebee; color:#c62828; border:1px solid #ffcdd2; }
+        .torneo-card.activo .btn-toggle:hover { background:#ffcdd2; }
+        .torneo-card.inactivo .btn-toggle { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
+        .torneo-card.inactivo .btn-toggle:hover { background:#c8e6c9; }
+        .dashboard-empty { text-align:center; padding:60px 20px; }
+        .dashboard-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
+        .dashboard-empty-text { font-size:15px; color:#999; }
         .admin-footer { background: #fff; border-top: 1px solid #e0e0e0; }
         .admin-footer .ui-btn { background: #4caf50 !important; color: #fff !important; border: none !important; }
         .admin-panel { background: #fff; }
@@ -266,11 +282,12 @@ else if( $_SESSION['user_level'] === 1 )
                                 });
 
                                 if (activos.length > 0) {
-                                    html += '<h3 style="color:#4caf50; margin:12px 0 8px 0;">\u2714 Activos</h3>';
+                                    html += '<div class="dashboard-section-title activos">\u2696 Torneos Activos</div>';
                                     activos.forEach(function(t) {
                                         html += '<div class="torneo-card activo">';
-                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong><br>';
-                                        html += '<span class="torneo-detalle">' + t.fecha + ' &middot; ' + t.ciudad + '</span></div>';
+                                        html += '<div class="torneo-icon">\uD83C\uDFC6</div>';
+                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong>';
+                                        html += '<div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + t.ciudad + '</span></div></div>';
                                         html += '<div class="torneo-status"><span class="badge activo">Activo</span></div>';
                                         html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '" data-activo="1">Desactivar</a></div>';
                                         html += '</div>';
@@ -278,18 +295,19 @@ else if( $_SESSION['user_level'] === 1 )
                                 }
 
                                 if (inactivos.length > 0) {
-                                    html += '<h3 style="color:#999; margin:16px 0 8px 0;">\u2716 Inactivos</h3>';
+                                    html += '<div class="dashboard-section-title inactivos">\u23F3 Torneos Inactivos</div>';
                                     inactivos.forEach(function(t) {
                                         html += '<div class="torneo-card inactivo">';
-                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong><br>';
-                                        html += '<span class="torneo-detalle">' + t.fecha + ' &middot; ' + t.ciudad + '</span></div>';
+                                        html += '<div class="torneo-icon">\uD83D\uDD34</div>';
+                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong>';
+                                        html += '<div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + t.ciudad + '</span></div></div>';
                                         html += '<div class="torneo-status"><span class="badge inactivo">Inactivo</span></div>';
                                         html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '" data-activo="0">Activar</a></div>';
                                         html += '</div>';
                                     });
                                 }
                             } else {
-                                html = '<div style="text-align:center; padding:40px 20px; color:#999;">No hay torneos registrados. Crea uno desde el men&uacute;.</div>';
+                                html = '<div class="dashboard-empty"><div class="dashboard-empty-icon">\uD83C\uDFC6</div><div class="dashboard-empty-text">No hay torneos registrados. Crea uno desde el men&uacute;.</div></div>';
                             }
 
                             $('#dashboardContent').html(html);
@@ -782,8 +800,12 @@ else if( $_SESSION['user_level'] === 1 )
 		</div>
 		<div role="main" class="ui-content">
 			<div id="dashboard">
-				<h2 style="color:#333; margin-bottom:16px;">Dashboard de Torneos</h2>
-				<div id="dashboardLoading" style="text-align:center; padding:20px; color:#999;">Cargando torneos...</div>
+				<div style="display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:16px 18px; background:linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius:14px; border:1px solid #c8e6c9;">
+					<div style="font-size:28px;">🏟️</div>
+					<div><h2 style="color:#1b5e20; margin:0; font-size:18px; font-weight:700;">Panel de Torneos</h2>
+					<p style="color:#558b2f; margin:2px 0 0; font-size:12px;">Gestiona el estado de tus torneos</p></div>
+				</div>
+				<div id="dashboardLoading" style="text-align:center; padding:40px; color:#999; font-size:14px;">Cargando torneos...</div>
 				<div id="dashboardContent"></div>
 			</div>
 		</div>
