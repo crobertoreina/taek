@@ -63,3 +63,7 @@ CREATE TABLE IF NOT EXISTS `participante_categoria` (
   `id_categoria` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Columna activo para torneos
+ALTER TABLE `torneos`
+  ADD COLUMN IF NOT EXISTS `activo` tinyint(1) NOT NULL DEFAULT 1 AFTER `ciudad`;

@@ -37,10 +37,20 @@ else if( $_SESSION['user_level'] === 1 )
         .admin-header { background: linear-gradient(135deg, #4caf50, #388e3c); border-bottom: 3px solid #ffeb3b; }
         .admin-header h1 { color: #fff; text-shadow: none; }
         .admin-header .ui-btn { color: #fff !important; background: rgba(255,255,255,0.15) !important; border: none !important; }
-        .btn-cat { font-size: 32px !important; font-weight: 700 !important; letter-spacing: 2px; border-radius: 16px !important; margin: 8px 16px !important; height: 100px !important; text-transform: uppercase !important; color: #fff !important; }
-        .btn-cat.kyorugi { background: linear-gradient(135deg, #ff5722, #e64a19) !important; }
-        .btn-cat.poomsae { background: linear-gradient(135deg, #4caf50, #388e3c) !important; }
-        .btn-cat.freestyle { background: linear-gradient(135deg, #2196f3, #1565c0) !important; }
+        .torneo-card { display:flex; align-items:center; padding:12px 14px; margin:6px 0; border-radius:10px; background:#fff; border:1px solid #e0e0e0; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+        .torneo-card.activo { border-left:4px solid #4caf50; }
+        .torneo-card.inactivo { border-left:4px solid #bbb; opacity:0.7; }
+        .torneo-info { flex:1; min-width:0; }
+        .torneo-info strong { font-size:15px; color:#333; }
+        .torneo-detalle { font-size:12px; color:#999; }
+        .torneo-status { margin:0 10px; }
+        .torneo-accion { flex-shrink:0; }
+        .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; text-transform:uppercase; }
+        .badge.activo { background:#e8f5e9; color:#2e7d32; }
+        .badge.inactivo { background:#f5f5f5; color:#888; }
+        .btn-toggle { display:inline-block; padding:6px 14px; border-radius:6px; font-size:12px; text-decoration:none; font-weight:600; }
+        .torneo-card.activo .btn-toggle { background:#ffebee; color:#c62828; }
+        .torneo-card.inactivo .btn-toggle { background:#e8f5e9; color:#2e7d32; }
         .admin-footer { background: #fff; border-top: 1px solid #e0e0e0; }
         .admin-footer .ui-btn { background: #4caf50 !important; color: #fff !important; border: none !important; }
         .admin-panel { background: #fff; }
@@ -233,7 +243,87 @@ else if( $_SESSION['user_level'] === 1 )
         });
     </script>
 	<script>
-        $(document).ready(function() {
+		$(document).ready(function() {
+            function cargarDashboard() {
+                $.ajax({
+                    type: 'GET',
+                    url: 'getTorneos.php',
+                    success: function(data) {
+                        try {
+                            var torneos = typeof data === 'string' ? JSON.parse(data) : data;
+                            var html = '';
+                            var activos = [];
+                            var inactivos = [];
+
+                            if (Array.isArray(torneos) && torneos.length > 0) {
+                                torneos.forEach(function(t) {
+                                    t.activo = t.activo !== undefined ? parseInt(t.activo) : 1;
+                                    if (t.activo === 1) {
+                                        activos.push(t);
+                                    } else {
+                                        inactivos.push(t);
+                                    }
+                                });
+
+                                if (activos.length > 0) {
+                                    html += '<h3 style="color:#4caf50; margin:12px 0 8px 0;">\u2714 Activos</h3>';
+                                    activos.forEach(function(t) {
+                                        html += '<div class="torneo-card activo">';
+                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong><br>';
+                                        html += '<span class="torneo-detalle">' + t.fecha + ' &middot; ' + t.ciudad + '</span></div>';
+                                        html += '<div class="torneo-status"><span class="badge activo">Activo</span></div>';
+                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '" data-activo="1">Desactivar</a></div>';
+                                        html += '</div>';
+                                    });
+                                }
+
+                                if (inactivos.length > 0) {
+                                    html += '<h3 style="color:#999; margin:16px 0 8px 0;">\u2716 Inactivos</h3>';
+                                    inactivos.forEach(function(t) {
+                                        html += '<div class="torneo-card inactivo">';
+                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong><br>';
+                                        html += '<span class="torneo-detalle">' + t.fecha + ' &middot; ' + t.ciudad + '</span></div>';
+                                        html += '<div class="torneo-status"><span class="badge inactivo">Inactivo</span></div>';
+                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '" data-activo="0">Activar</a></div>';
+                                        html += '</div>';
+                                    });
+                                }
+                            } else {
+                                html = '<div style="text-align:center; padding:40px 20px; color:#999;">No hay torneos registrados. Crea uno desde el men&uacute;.</div>';
+                            }
+
+                            $('#dashboardContent').html(html);
+                            $('#dashboardLoading').hide();
+                        } catch (e) {
+                            console.error('Error al cargar dashboard:', e);
+                            $('#dashboardLoading').html('Error al cargar torneos.');
+                        }
+                    },
+                    error: function() {
+                        $('#dashboardLoading').html('Error de conexi&oacute;n.');
+                    }
+                });
+            }
+
+            $(document).on('click', '.btn-toggle', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var $btn = $(this);
+                $.ajax({
+                    type: 'POST',
+                    url: 'toggleTorneo.php',
+                    data: { id: id },
+                    success: function(resp) {
+                        cargarDashboard();
+                    },
+                    error: function() {
+                        alert('Error al cambiar estado.');
+                    }
+                });
+            });
+
+            cargarDashboard();
+
             // Función para formatear la fecha (en formato YYYY-MM-DD)
             function formatDate(date) {
                 var d = new Date(date);
@@ -260,12 +350,13 @@ else if( $_SESSION['user_level'] === 1 )
                                 mensajeNoTorneos.hide(); // Ocultar el mensaje cuando hay torneos
 
                                 torneos.forEach(function(torneo) {
-                                    var fechaFormateada = formatDate(torneo.fecha); // Aseguramos que la fecha esté en formato correcto
-                                    
-                                    // Crear un collapsible para cada torneo
+                                    var fechaFormateada = formatDate(torneo.fecha);
+                                    var activo = torneo.activo !== undefined ? parseInt(torneo.activo) : 1;
+                                    var activoLabel = activo === 1 ? 'Activo' : 'Inactivo';
+
                                     torneoList.append(
                                         $('<div data-role="collapsible" data-theme="a" data-content-theme="a" data-role="content" id="torneo' + torneo.idTorneo + '">' +
-                                            '<h3>' + torneo.nombre + ' - ' + fechaFormateada + '</h3>' +
+                                            '<h3>' + torneo.nombre + ' - ' + fechaFormateada + ' <span style="color:' + (activo === 1 ? '#4caf50' : '#999') + ';font-size:12px;">[' + activoLabel + ']</span></h3>' +
                                             '<form>' +
                                                 '<div data-role="fieldcontain">' +
                                                     '<label for="idTorneo' + torneo.idTorneo + '">ID:</label>' +
@@ -283,10 +374,17 @@ else if( $_SESSION['user_level'] === 1 )
                                                     '<label for="ciudadT' + torneo.idTorneo + '">Ciudad:</label>' +
                                                     '<input type="text" id="ciudadT' + torneo.idTorneo + '" value="' + torneo.ciudad + '" >' +
                                                 '</div>' +
+                                                '<div data-role="fieldcontain">' +
+                                                    '<label for="activoT' + torneo.idTorneo + '">Estado:</label>' +
+                                                    '<select id="activoT' + torneo.idTorneo + '">' +
+                                                        '<option value="1" ' + (activo === 1 ? 'selected' : '') + '>Activo</option>' +
+                                                        '<option value="0" ' + (activo === 0 ? 'selected' : '') + '>Inactivo</option>' +
+                                                    '</select>' +
+                                                '</div>' +
                                                 '<center><a href="#" data-role="button" data-inline="true" data-theme="a" class="button_modT" data-id="' + torneo.idTorneo + '">Modificar</a>' +
                                                 '<a href="#aviso_borrarT" data-role="button" data-inline="true" data-position="center" data-theme="a" data-rel="dialog" data-transition="flip" class="button_delT" data-id="' + torneo.idTorneo + '">Eliminar</a></center>' +
                                             '</form>' +
-                                        '</div>')  
+                                        '</div>')
                                     );
                                 });
 
@@ -321,37 +419,37 @@ else if( $_SESSION['user_level'] === 1 )
             // Evento para manejar el clic en el botón Modificar
             $(document).on('click', '.button_modT', function() {
                 var idTorneo = $(this).data('id');
-                // Capturamos los nuevos valores que el usuario ha editado
                 var nombre = $('#nombreT' + idTorneo).val();
                 var fecha = $('#fecha' + idTorneo).val();
                 var ciudad = $('#ciudadT' + idTorneo).val();
+                var activo = $('#activoT' + idTorneo).val();
 
-                // Llamar a la función para modificar el torneo
-                modificarTorneo(idTorneo, nombre, fecha, ciudad);
+                modificarTorneo(idTorneo, nombre, fecha, ciudad, activo);
             });
 
             // Función para modificar el torneo
-            function modificarTorneo(id, nombre, fecha, ciudad) {
+            function modificarTorneo(id, nombre, fecha, ciudad, activo) {
 				$.ajax({
 					type: 'POST',
-					url: 'modificarTorneo.php',  // Archivo PHP que procesa la modificación
+					url: 'modificarTorneo.php',
 					data: {
 						id: id,
 						nombre: nombre,
 						fecha: fecha,
-						ciudad: ciudad
+						ciudad: ciudad,
+						activo: activo
 					},
 					success: function(response) {
-						console.log('Torneo modificado:', response); // Esto ya es un objeto, no es necesario JSON.parse
+						console.log('Torneo modificado:', response);
 						if (response.success) {
-							alert(response.message); // Si la modificación fue exitosa
-							cargarTorneos(); // Recargar la lista de torneos
+							alert(response.message);
+							cargarTorneos();
+							cargarDashboard();
 						} else {
-							alert(response.message); // Si hubo un error
+							alert(response.message);
 						}
 					},
 					error: function(xhr, status, error) {
-						//console.error('Error al modificar el torneo:', error);
 					}
 				});
 			}
@@ -376,10 +474,8 @@ else if( $_SESSION['user_level'] === 1 )
                     data: { idTorneo: idTorneo },
                     success: function(response) {
                         console.log('Torneo eliminado:', response);
-                        // Recargar la lista de torneos
                         cargarTorneos();
-
-                        // Regresar a la página de la lista de torneos
+                        if (typeof cargarDashboard === 'function') cargarDashboard();
                         $.mobile.changePage('#torneos', { transition: 'pop' });
                     },
                     error: function(xhr, status, error) {
@@ -413,15 +509,13 @@ else if( $_SESSION['user_level'] === 1 )
                     success: function(response) {
                         console.log('Torneo agregado:', response);
                         
-                        // Limpiar los campos del formulario
                         $('#nombreT').val('');
                         $('#fecha').val('');
-                        $('#ciudadT').val('');
+                        $('#ciudadT').val();
 
-                         // Recargar la lista de torneos
                         cargarTorneos();
-                        
-                        // Cerrar el formulario de agregar torneo
+                        if (typeof cargarDashboard === 'function') cargarDashboard();
+
                         $.mobile.changePage('#torneos', { transition: 'pop' });
                     },
                     error: function(xhr, status, error) {
@@ -687,10 +781,10 @@ else if( $_SESSION['user_level'] === 1 )
 			</div>
 		</div>
 		<div role="main" class="ui-content">
-			<div style="padding: 8px 0;">
-				<a href="#kyorugiPage" data-role="button" class="btn-cat kyorugi">Kyorugi</a>
-				<a href="#poonsaePage" data-role="button" class="btn-cat poomsae">Poomsae</a>
-				<a href="#freestylePage" data-role="button" class="btn-cat freestyle">Freestyle Poomsae</a>
+			<div id="dashboard">
+				<h2 style="color:#333; margin-bottom:16px;">Dashboard de Torneos</h2>
+				<div id="dashboardLoading" style="text-align:center; padding:20px; color:#999;">Cargando torneos...</div>
+				<div id="dashboardContent"></div>
 			</div>
 		</div>
 		<div data-role="footer" data-position="fixed" class="admin-footer">
