@@ -132,10 +132,6 @@ $conn->close();
         .collapsible-participante .ui-collapsible-content textarea { color:#333 !important; background:#fff !important; }
         .collapsible-participante .ui-collapsible-content input[type="number"] { width:100% !important; }
         .collapsible-participante .ui-collapsible-content .ui-select .ui-btn { color:#333 !important; background:#fff !important; }
-        .btn-elegant-mod { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:400; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:#388e3c; color:#fff; }
-        .btn-elegant-mod:hover { background:#2e7d32; transform:translateY(-1px); }
-        .btn-elegant-del { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:400; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:#c62828; color:#fff; }
-        .btn-elegant-del:hover { background:#b71c1c; transform:translateY(-1px); }
         .btn-group { display:flex; justify-content:center; gap:10px; margin-top:14px; }
     </style>
     <script>
@@ -191,13 +187,17 @@ $conn->close();
                                                 '<div data-role="fieldcontain"><label for="categoria' + p.id + '">Categor\u00eda</label>' + sel(p.id, 'categoria', p.categoria, cats) + '</div>' +
                                                 '<div data-role="fieldcontain"><label for="cinturon' + p.id + '">Cintur\u00f3n</label>' + sel(p.id, 'cinturon', p.cinturon, belts) + '</div>' +
                                                 '<div data-role="fieldcontain"><label for="escuela' + p.id + '">\uD83C\uDFEB Escuela</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
-                                                '<div class="btn-group"><a href="#" class="btn-elegant-mod button_mod" data-id="' + p.id + '">✏ Modificar</a>' +
-                                                '<a href="#aviso_borrar" class="btn-elegant-del button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '">🗑 Eliminar</a></div>' +
+                                                '<div class="btn-group"><a href="#" data-role="button" data-inline="true" data-mini="true" class="button_mod" data-id="' + p.id + '">✏ Modificar</a>' +
+                                                '<a href="#aviso_borrar" data-role="button" data-inline="true" data-mini="true" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '">🗑 Eliminar</a></div>' +
                                             '</form>' +
                                         '</div>')
                                     );
                                 });
                                 participanteList.collapsibleset('refresh');
+                                setTimeout(function() {
+                                    $('#listParticipantes .button_mod').button();
+                                    $('#listParticipantes .button_del').button();
+                                }, 100);
                                 $('input[type="text"]').textinput();
                                 $('#listParticipantes select').selectmenu();
                             }
