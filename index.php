@@ -175,7 +175,7 @@ $conn->close();
                                     var escHeader = p.escuela_nombre ? ' <span style="font-size:11px;color:#999;font-weight:400;">[' + p.escuela_nombre + ']</span>' : '';
                                     var edadLabel = p.edad ? ' <span style="font-size:11px;color:#999;">\uD83C\uDF82' + p.edad + ' a\u00f1os</span>' : '';
                                     participanteList.append(
-                                        $('<div data-role="collapsible" data-theme="a" data-content-theme="a" class="collapsible-participante" id="participante' + p.id + '">' +
+                                        $('<div data-role="collapsible" class="collapsible-participante" id="participante' + p.id + '">' +
                                             '<h3>' + p.nombre + ' ' + p.apellido + escHeader + edadLabel + '</h3>' +
                                             '<form>' +
                                                 '<div data-role="fieldcontain"><label for="id' + p.id + '">ID</label><input type="text" id="id' + p.id + '" value="' + p.id + '" disabled></div>' +
