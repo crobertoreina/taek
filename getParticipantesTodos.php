@@ -4,7 +4,7 @@ header('Content-Type: application/json'); // Asegúrate de que la respuesta sea 
 include 'conexion.php'; // Incluir archivo de conexión
 
 // Consulta para obtener los participantes
-$query = "SELECT * FROM participantes";
+$query = "SELECT p.*, e.nombre as escuela_nombre, e.siglas as escuela_siglas FROM participantes p LEFT JOIN escuelas e ON p.id_escuela = e.id ORDER BY p.nombre";
 
 $result = $conexion->query($query);
 

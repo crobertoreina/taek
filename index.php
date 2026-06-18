@@ -10,6 +10,16 @@ if (!isset($_SESSION['user_id']) ) {
 }
 else if( $_SESSION['user_level'] === 1 )
 {
+// Cargar escuelas y torneos para JS (evitar AJAX inicial)
+$escData = [];
+$torneosData = [];
+$conn = new mysqli('localhost', 'root', '', 'taekdb');
+$conn->set_charset('utf8');
+$r = $conn->query("SELECT id, nombre, siglas FROM escuelas WHERE estado = 1 ORDER BY nombre");
+if ($r) { while ($row = $r->fetch_assoc()) { $escData[] = $row; } }
+$r2 = $conn->query("SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE COALESCE(activo, 1) END as estado_efectivo, (SELECT COUNT(*) FROM torneoparticipante WHERE idTorneo = t.idTorneo) as total_participantes, (SELECT COUNT(*) FROM torneojueces WHERE idTorneo = t.idTorneo) as total_jueces FROM torneos t ORDER BY fecha DESC");
+if ($r2) { while ($row = $r2->fetch_assoc()) { $torneosData[] = $row; } }
+$conn->close();
 
 ?>
 
@@ -50,6 +60,9 @@ else if( $_SESSION['user_level'] === 1 )
         .torneo-card.activo::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #4caf50, #81c784); opacity:0.5; }
         .torneo-card.inactivo { border-left:5px solid #bdbdbd; opacity:0.75; }
         .torneo-card.inactivo::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #bdbdbd, #e0e0e0); opacity:0.4; }
+        .torneo-card.pendiente { border-left:5px solid #ffb300; opacity:0.85; }
+        .torneo-card.pendiente::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #ffb300, #ffd54f); opacity:0.4; }
+        .torneo-card.pendiente .torneo-icon { background:linear-gradient(135deg, #fff8e1, #ffecb3); }
         .torneo-card.finalizado { border-left:5px solid #90a4ae; opacity:0.6; }
         .torneo-card.finalizado::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #90a4ae, #cfd8dc); opacity:0.4; }
         .torneo-card.finalizado .torneo-icon { background:linear-gradient(135deg, #eceff1, #cfd8dc); }
@@ -65,6 +78,7 @@ else if( $_SESSION['user_level'] === 1 )
         .badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
         .badge.activo { background:linear-gradient(135deg, #e8f5e9, #c8e6c9); color:#2e7d32; box-shadow:0 1px 3px rgba(76,175,80,0.15); }
         .badge.inactivo { background:linear-gradient(135deg, #f5f5f5, #e0e0e0); color:#757575; }
+        .badge.pendiente { background:linear-gradient(135deg, #fff8e1, #ffecb3); color:#f57f17; box-shadow:0 1px 3px rgba(255,152,0,0.15); }
         .badge.finalizado { background:linear-gradient(135deg, #eceff1, #cfd8dc); color:#546e7a; }
         .btn-toggle { display:inline-block; padding:7px 16px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:600; border:none; cursor:pointer; transition:all 0.15s ease; }
         .btn-toggle:hover { transform:scale(1.04); }
@@ -74,6 +88,9 @@ else if( $_SESSION['user_level'] === 1 )
         .torneo-card.inactivo .btn-toggle:hover { background:#c8e6c9; }
         .torneo-card.finalizado .btn-toggle { background:#eceff1; color:#546e7a; border:1px solid #cfd8dc; }
         .torneo-card.finalizado .btn-toggle:hover { background:#cfd8dc; }
+        .lock-icon { display:inline-block; padding:7px 12px; font-size:18px; opacity:0.5; cursor:default; }
+        .torneo-counts { font-size:11px; color:#aaa; margin-left:8px; }
+        .torneo-detalle span.torneo-counts::before { content:'|'; margin-right:8px; color:#ddd; }
         .dashboard-empty { text-align:center; padding:60px 20px; }
         .dashboard-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
         .dashboard-empty-text { font-size:15px; color:#999; }
@@ -95,119 +112,246 @@ else if( $_SESSION['user_level'] === 1 )
         .admin-panel .ui-listview li:last-child a { border-bottom:none !important; }
         .admin-panel .ui-listview .ui-btn-inner { border:none !important; }
         .admin-panel .ui-header h1 { color: #fff; }
+        .elegant-form { max-width:420px; margin:16px auto; background:#fff; border-radius:18px; padding:24px 22px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border:1px solid #f0f0f0; }
+        .elegant-form .ui-fieldcontain { margin:6px 0 16px 0 !important; border:none !important; padding:0 !important; }
+        .elegant-form .ui-fieldcontain .ui-input-text { margin:0 !important; }
+        .elegant-form .ui-fieldcontain input, .elegant-form .ui-fieldcontain select { border-radius:10px !important; border:1.5px solid #e0e0e0 !important; padding:12px 14px !important; font-size:14px !important; background:#fafafa !important; transition:all 0.15s ease !important; box-shadow:none !important; }
+        .elegant-form .ui-fieldcontain input:focus, .elegant-form .ui-fieldcontain select:focus { border-color:#4caf50 !important; background:#fff !important; box-shadow:0 0 0 3px rgba(76,175,80,0.1) !important; }
+        .elegant-form .ui-fieldcontain label { font-size:12px !important; font-weight:600 !important; color:#555 !important; text-transform:uppercase !important; letter-spacing:0.8px !important; margin-bottom:6px !important; display:block !important; }
+        .elegant-form .ui-btn.ui-btn-submit { background:linear-gradient(135deg,#2e7d32,#4caf50) !important; color:#fff !important; border:none !important; border-radius:12px !important; padding:12px !important; font-size:15px !important; font-weight:600 !important; letter-spacing:0.5px !important; box-shadow:0 4px 12px rgba(76,175,80,0.25) !important; transition:all 0.15s ease !important; margin-top:8px !important; }
+        .elegant-form .ui-btn.ui-btn-submit:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(76,175,80,0.3) !important; }
+        .elegant-form .ui-btn.ui-btn-cancel { background:#f5f5f5 !important; color:#666 !important; border:1px solid #e0e0e0 !important; border-radius:12px !important; padding:12px !important; font-size:14px !important; font-weight:500 !important; transition:all 0.15s ease !important; }
+        .elegant-form .ui-btn.ui-btn-cancel:hover { background:#eee !important; }
+        .form-header-icon { text-align:center; font-size:36px; margin-bottom:4px; }
+        .form-header-title { text-align:center; font-size:18px; font-weight:700; color:#2e7d32; margin-bottom:20px; }
+        .collapsible-participante .ui-collapsible-heading-toggle { padding:14px 16px !important; font-size:14px !important; }
+        .collapsible-participante .ui-collapsible-content { padding:12px 16px !important; }
     </style>
     <script>
         $(document).ready(function() {
-            // Función para cargar los participantes desde el servidor
+            var escuelas = <?= json_encode($escData) ?>;
+            var torneosData = <?= json_encode($torneosData) ?>;
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+            }
+
+            function escuelaOpts(sel) {
+                var h = '<option value="">-- Sin escuela --</option>';
+                escuelas.forEach(function(e) { h += '<option value="' + e.id + '"' + (sel == e.id ? ' selected' : '') + '>' + e.nombre + (e.siglas ? ' (' + e.siglas + ')' : '') + '</option>'; });
+                return h;
+            }
+
             function cargarParticipantes() {
                 $.ajax({
                     type: 'GET',
-                    url: 'getParticipantesTodos.php', // Archivo PHP que devuelve los participantes
+                    url: 'getParticipantesTodos.php',
                     success: function(data) {
                         try {
-                            var torneos = typeof data === 'string' ? JSON.parse(data) : data;
-                            if (torneos.error) {
-                                $('#dashboardLoading').html('Error: ' + torneos.error);
-                                return;
-                            }
-                            var html = '';
-                            var activos = [];
-                            var inactivos = [];
+                            var participantes = typeof data === 'string' ? JSON.parse(data) : data;
+                            var participanteList = $('#listParticipantes');
+                            participanteList.empty();
 
-                            if (Array.isArray(torneos) && torneos.length > 0) {
-                                var today = new Date();
-                                today.setHours(0,0,0,0);
-                                function esPasada(fechaStr) {
-                                    var partes = fechaStr.split('-');
-                                    var d = new Date(partes[0], partes[1]-1, partes[2]);
-                                    return d < today;
+                            if (Array.isArray(participantes)) {
+                                var belts = ['','\u26AA Blanco','\u26AA\uD83D\uDFE1 Blanco/Amarillo','\uD83D\uDFE1 Amarillo','\uD83D\uDFE1\uD83D\uDFE2 Amarillo/Verde','\uD83D\uDFE2 Verde','\uD83D\uDFE2\uD83D\uDD35 Verde/Azul','\uD83D\uDD35 Azul','\uD83D\uDD35\uD83D\uDD34 Azul/Rojo','\uD83D\uDD34 Rojo','\uD83D\uDD34\u26AB Rojo/Negro','\u26AB Negro 1er Dan','\u26AB Negro 2do Dan','\u26AB Negro 3er Dan+'];
+                                var cats = ['','Infantil','Juvenil','Adulto','Master'];
+                                function sel(id, name, val, opts) {
+                                    var h = '<select id="' + name + id + '" name="' + name + '">';
+                                    opts.forEach(function(o) { h += '<option value="' + o + '"' + (val === o ? ' selected' : '') + '>' + (o || '--') + '</option>'; });
+                                    h += '</select>';
+                                    return h;
                                 }
-
-                                torneos.forEach(function(t) {
-                                    t.estado_efectivo = t.estado_efectivo !== undefined ? parseInt(t.estado_efectivo) : 0;
-                                    t.activo = t.activo !== undefined ? parseInt(t.activo) : 1;
-                                    t.pasado = esPasada(t.fecha);
-                                    if (t.estado_efectivo === 1 && !t.pasado) {
-                                        activos.push(t);
-                                    } else {
-                                        inactivos.push(t);
-                                    }
+                                participantes.forEach(function(p) {
+                                    p.categoria = p.categoria || '';
+                                    p.cinturon = p.cinturon || '';
+                                    var escHeader = p.escuela_nombre ? ' <span style="font-size:11px;color:#999;font-weight:400;">[' + p.escuela_nombre + ']</span>' : '';
+                                    var edadLabel = p.edad ? ' <span style="font-size:11px;color:#999;">\uD83C\uDF82' + p.edad + ' a\u00f1os</span>' : '';
+                                    participanteList.append(
+                                        $('<div data-role="collapsible" data-theme="a" data-content-theme="a" class="collapsible-participante" id="participante' + p.id + '">' +
+                                            '<h3>' + p.nombre + ' ' + p.apellido + escHeader + edadLabel + '</h3>' +
+                                            '<form>' +
+                                                '<div data-role="fieldcontain"><label for="id' + p.id + '">ID</label><input type="text" id="id' + p.id + '" value="' + p.id + '" disabled></div>' +
+                                                '<div data-role="fieldcontain"><label for="nombre' + p.id + '">Nombre</label><input type="text" id="nombre' + p.id + '" value="' + p.nombre + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="apellido' + p.id + '">Apellido</label><input type="text" id="apellido' + p.id + '" value="' + p.apellido + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="telefono' + p.id + '">Tel\u00e9fono</label><input type="text" id="telefono' + p.id + '" value="' + p.telefono + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="ciudad' + p.id + '">Ciudad</label><input type="text" id="ciudad' + p.id + '" value="' + p.ciudad + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="edad' + p.id + '">Edad</label><input type="number" id="edad' + p.id + '" value="' + (p.edad || '') + '" min="1" max="120"></div>' +
+                                                '<div data-role="fieldcontain"><label for="categoria' + p.id + '">Categor\u00eda</label>' + sel(p.id, 'categoria', p.categoria, cats) + '</div>' +
+                                                '<div data-role="fieldcontain"><label for="cinturon' + p.id + '">Cintur\u00f3n</label>' + sel(p.id, 'cinturon', p.cinturon, belts) + '</div>' +
+                                                '<div data-role="fieldcontain"><label for="escuela' + p.id + '">\uD83C\uDFEB Escuela</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
+                                                '<div style="text-align:center;margin-top:12px;"><a href="#" data-role="button" data-inline="true" data-theme="a" class="button_mod" style="border-radius:10px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border:none;font-weight:600;padding:10px 28px;" data-id="' + p.id + '">Modificar</a>' +
+                                                '<a href="#aviso_borrar" data-role="button" data-inline="true" data-position="center" data-theme="a" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '" style="border-radius:10px;background:#ffebee;color:#c62828;border:1px solid #ffcdd2;font-weight:600;padding:10px 28px;">Eliminar</a></div>' +
+                                            '</form>' +
+                                        '</div>')
+                                    );
                                 });
-
-                                if (activos.length > 0) {
-                                    html += '<div class="dashboard-section-title activos">\u2696 Torneos Activos</div>';
-                                    activos.forEach(function(t) {
-                                        html += '<div class="torneo-card activo">';
-                                        html += '<div class="torneo-icon">\uD83C\uDFC6</div>';
-                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong>';
-                                        html += '<div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + t.ciudad + '</span></div></div>';
-                                        html += '<div class="torneo-status"><span class="badge activo">Activo</span></div>';
-                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '">Desactivar</a></div>';
-                                        html += '</div>';
-                                    });
-                                }
-
-                                if (inactivos.length > 0) {
-                                    html += '<div class="dashboard-section-title inactivos">\u23F3 Torneos Inactivos</div>';
-                                    inactivos.forEach(function(t) {
-                                        var esFinalizado = t.pasado;
-                                        var badgeClass = esFinalizado ? 'finalizado' : 'inactivo';
-                                        var badgeText = esFinalizado ? 'Finalizado' : 'Inactivo';
-                                        var icono = esFinalizado ? '\uD83C\uDFC1' : '\uD83D\uDD34';
-                                        var toggleText = t.activo === 1 ? 'Desactivar' : 'Activar';
-                                        html += '<div class="torneo-card ' + (esFinalizado ? 'finalizado' : 'inactivo') + '">';
-                                        html += '<div class="torneo-icon">' + icono + '</div>';
-                                        html += '<div class="torneo-info"><strong>' + t.nombre + '</strong>';
-                                        html += '<div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + t.ciudad + '</span></div></div>';
-                                        html += '<div class="torneo-status"><span class="badge ' + badgeClass + '">' + badgeText + '</span></div>';
-                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '">' + toggleText + '</a></div>';
-                                        html += '</div>';
-                                    });
-                                }
-                            } else {
-                                html = '<div class="dashboard-empty"><div class="dashboard-empty-icon">\uD83C\uDFC6</div><div class="dashboard-empty-text">No hay torneos registrados. Crea uno desde el men&uacute;.</div></div>';
+                                participanteList.collapsibleset('refresh');
+                                setTimeout(function() {
+                                    $('#listParticipantes .button_mod').button();
+                                    $('#listParticipantes .button_del').button();
+                                }, 100);
+                                $('input[type="text"]').textinput();
+                                $('#listParticipantes select').selectmenu();
                             }
-
-                            $('#dashboardContent').html(html);
-                            $('#dashboardLoading').hide();
                         } catch (e) {
-                            console.error('Error al cargar dashboard:', e);
-                            $('#dashboardLoading').html('Error al cargar torneos.');
+                            console.error("Error al procesar participantes:", e);
                         }
                     },
-                    error: function(xhr) {
-                        $('#dashboardLoading').html('Error de conexi&oacute;n. ' + xhr.status + ': ' + xhr.statusText);
+                    error: function(xhr, status, error) {
+                        console.error('Error en la solicitud de participantes:', error);
                     }
                 });
             }
+            cargarParticipantes();
+
+            $(document).on('click', '.button_mod', function() {
+                var id = $(this).data('id');
+                modificarParticipante(id, $('#nombre' + id).val(), $('#apellido' + id).val(), $('#telefono' + id).val(), $('#ciudad' + id).val(), $('#edad' + id).val(), $('#categoria' + id).val(), $('#cinturon' + id).val(), $('#escuela' + id).val());
+            });
+
+            function modificarParticipante(id, nombre, apellido, telefono, ciudad, edad, categoria, cinturon, id_escuela) {
+                $.ajax({
+                    type: 'POST', url: 'modificarParticipante.php',
+                    data: { id: id, nombre: nombre, apellido: apellido, telefono: telefono, ciudad: ciudad, edad: edad, categoria: categoria, cinturon: cinturon, id_escuela: id_escuela },
+                    success: function(response) { console.log('Participante modificado:', response); cargarParticipantes(); },
+                    error: function(xhr, status, error) { console.error('Error al modificar el participante:', error); }
+                });
+            }
+
+            $(document).on('click', '.button_del', function() {
+                $('#btn_confirmar_eliminar').data('id', $(this).data('id'));
+            });
+
+            $('#btn_confirmar_eliminar').on('click', function() {
+                $.ajax({
+                    type: 'POST', url: 'eliminarParticipante.php',
+                    data: { id: $(this).data('id') },
+                    success: function(response) { console.log('Participante eliminado:', response); cargarParticipantes(); $.mobile.changePage('#participantes', { transition: 'pop' }); },
+                    error: function(xhr, status, error) { console.error('Error al eliminar el participante:', error); }
+                });
+            });
+
+            $('#form_agregar_participante').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST', url: 'agregarParticipante.php',
+                    data: { nombre: $('#nombre_f').val(), apellido: $('#apellido_f').val(), telefono: $('#telefono_f').val(), ciudad: $('#ciudad_f').val(), edad: $('#edad_f').val(), categoria: $('#categoria_f').val(), cinturon: $('#cinturon_f').val(), id_escuela: $('#escuela_f').val() },
+                    success: function(response) {
+                        console.log('Participante agregado:', response);
+                        $('#nombre_f').val(''); $('#apellido_f').val(''); $('#telefono_f').val(''); $('#ciudad_f').val(''); $('#edad_f').val(''); $('#categoria_f').val(''); $('#cinturon_f').val(''); $('#escuela_f').val('');
+                        cargarParticipantes();
+                        $.mobile.changePage('#participantes', { transition: 'pop' });
+                    },
+                    error: function(xhr, status, error) { console.error('Error al agregar el participante:', error); }
+                });
+            });
+
+            function procesarTorneos(torneos) {
+                try {
+                    if (!torneos || torneos.error) {
+                        $('#dashboardLoading').html('Error: ' + (torneos && torneos.error || 'Respuesta invalida'));
+                        return;
+                    }
+                    var html = '';
+                    var activos = [], inactivos = [];
+                    var today = new Date(); today.setHours(0,0,0,0);
+
+                    if (Array.isArray(torneos) && torneos.length > 0) {
+                        function esPasada(f) { var p = f.split('-'); return new Date(p[0], p[1]-1, p[2]) < today; }
+                        torneos.forEach(function(t) {
+                            t.activo = t.activo !== undefined ? parseInt(t.activo) : 1;
+                            t.estado_efectivo = t.estado_efectivo !== undefined ? parseInt(t.estado_efectivo) : 1;
+                            t.total_participantes = parseInt(t.total_participantes) || 0;
+                            t.total_jueces = parseInt(t.total_jueces) || 0;
+                            t.puede_alternar = t.total_participantes > 0 && t.total_jueces > 0;
+                            t.pasado = esPasada(t.fecha);
+                            (t.estado_efectivo === 1 && !t.pasado ? activos : inactivos).push(t);
+                        });
+
+                        function renderCard(t, badgeClass, badgeText, icono) {
+                            var requires = t.total_participantes + ' participante' + (t.total_participantes !== 1 ? 's' : '') + ' \u00b7 ' + t.total_jueces + ' juez' + (t.total_jueces !== 1 ? 'es' : '');
+                            var accion = '';
+                            if (t.pasado) {
+                                accion = '<span class="lock-icon" title="Torneo finalizado">\uD83D\uDD12</span>';
+                            } else if (t.estado_efectivo === 1) {
+                                accion = '<a href="#" class="btn-toggle" data-id="' + t.idTorneo + '">Desactivar</a>';
+                            } else if (t.puede_alternar) {
+                                accion = '<a href="#" class="btn-toggle" data-id="' + t.idTorneo + '">Activar</a>';
+                            } else {
+                                accion = '<span class="lock-icon" title="Requiere participantes y jueces">\uD83D\uDD12</span>';
+                            }
+                            html += '<div class="torneo-card ' + badgeClass + '"><div class="torneo-icon">' + icono + '</div><div class="torneo-info"><strong>' + escapeHtml(t.nombre) + '</strong><div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + escapeHtml(t.ciudad) + '</span><span class="torneo-counts">' + requires + '</span></div></div><div class="torneo-status"><span class="badge ' + badgeClass + '">' + badgeText + '</span></div><div class="torneo-accion">' + accion + '</div></div>';
+                        }
+
+                        if (activos.length > 0) {
+                            html += '<div class="dashboard-section-title activos">\u2696 Torneos Activos</div>';
+                            activos.forEach(function(t) { renderCard(t, 'activo', 'Activo', '\uD83C\uDFC6'); });
+                        }
+                        if (inactivos.length > 0) {
+                            html += '<div class="dashboard-section-title inactivos">\u23F3 Torneos Inactivos</div>';
+                            inactivos.forEach(function(t) { renderCard(t, t.pasado ? 'finalizado' : 'inactivo', t.pasado ? 'Finalizado' : 'Inactivo', t.pasado ? '\uD83C\uDFC1' : '\uD83D\uDD34'); });
+                        }
+                    } else {
+                        html = '<div class="dashboard-empty"><div class="dashboard-empty-icon">\uD83C\uDFC6</div><div class="dashboard-empty-text">No hay torneos registrados. Crea uno desde el men&uacute;.</div></div>';
+                    }
+                    $('#dashboardContent').html(html);
+                    $('#dashboardLoading').hide();
+                } catch (e) {
+                    $('#dashboardLoading').html('Error al cargar torneos: ' + e.message);
+                }
+            }
+
+            function cargarDashboard() {
+                var el = $('#dashboardLoading').show();
+                el.html('Cargando torneos...');
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'getTorneos.php', true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState !== 4) return;
+                    if (xhr.status === 200) {
+                        try {
+                            var torneos = JSON.parse(xhr.responseText);
+                            procesarTorneos(torneos);
+                        } catch(e) {
+                            el.html('Error parseando: ' + e.message + '<br><pre>' + escapeHtml(xhr.responseText) + '</pre>');
+                        }
+                    } else {
+                        el.html('Error HTTP ' + xhr.status + ': ' + xhr.statusText + '<br><pre>' + escapeHtml(xhr.responseText) + '</pre>');
+                    }
+                };
+                xhr.send();
+            }
+
+
+
+            // Populate escuela selects
+            function poblarEscuelas() {
+                var opts = '<option value="">-- Sin escuela --</option>';
+                escuelas.forEach(function(e) { opts += '<option value="' + e.id + '">' + e.nombre + (e.siglas ? ' (' + e.siglas + ')' : '') + '</option>'; });
+                $('#escuela_f').html(opts);
+                if ($.fn.selectmenu) $('#escuela_f').selectmenu('refresh');
+            }
+            poblarEscuelas();
+
+            // No llamar cargarDashboard() aqui; PHP ya renderizó los torneos en #dashboardContent
+            $(document).on('pageshow', '#mainPage', cargarDashboard);
 
             $(document).on('click', '.btn-toggle', function(e) {
                 e.preventDefault();
-                var id = $(this).data('id');
-                var $btn = $(this);
                 $.ajax({
-                    type: 'POST',
-                    url: 'toggleTorneo.php',
-                    data: { id: id },
-                    success: function(resp) {
-                        try {
-                            var r = typeof resp === 'string' ? JSON.parse(resp) : resp;
-                            if (r.success) {
-                                cargarDashboard();
-                            } else {
-                                alert('Error: ' + (r.message || 'No se pudo cambiar el estado.'));
-                            }
-                        } catch(e) {
-                            alert('Respuesta inesperada del servidor:\n' + resp);
-                        }
+                    type: 'POST', url: 'toggleTorneo.php',
+                    data: { id: $(this).data('id') },
+                    dataType: 'json',
+                    success: function(r) {
+                        if (r.success) { cargarDashboard(); }
+                        else { alert('Error: ' + (r.message || 'No se pudo cambiar el estado.')); }
                     },
                     error: function(xhr) {
                         alert('Error HTTP ' + xhr.status + ': ' + xhr.statusText + '\n\n' + xhr.responseText);
                     }
                 });
             });
-
-            cargarDashboard();
 
             // Función para formatear la fecha (en formato YYYY-MM-DD)
             function formatDate(date) {
@@ -408,6 +552,71 @@ else if( $_SESSION['user_level'] === 1 )
                     }
                 });
             }
+        });
+
+        // ---- Escuelas (admin) ----
+
+        function cargarEscuelas() {
+            $('#escuelasLoading').show();
+            $.ajax({
+                type: 'GET',
+                url: 'getEscuelasAdmin.php',
+                dataType: 'text',
+                success: function(data) {
+                    try {
+                        var escuelas = JSON.parse(data);
+                        var html = '';
+                        if (escuelas.error) {
+                            html = '<div style="padding:20px;color:#c62828;">Error: ' + escuelas.error + '</div>';
+                        } else if (Array.isArray(escuelas) && escuelas.length > 0) {
+                            escuelas.forEach(function(e) {
+                                var est = parseInt(e.estado);
+                                var badgeClass = est ? 'activo' : 'pendiente';
+                                var badgeText = est ? 'Activa' : 'Pendiente';
+                                var icono = est ? '\uD83C\uDFEB' : '\uD83C\uDFE2';
+                                var accion = '';
+                                if (est) {
+                                    accion = '<a href="#" class="btn-toggle-escuela" data-id="' + e.id + '" style="display:inline-block;padding:7px 16px;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600;background:#ffebee;color:#c62828;border:1px solid #ffcdd2;">Desactivar</a>';
+                                } else {
+                                    accion = '<a href="#" class="btn-toggle-escuela" data-id="' + e.id + '" style="display:inline-block;padding:7px 16px;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600;background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;">Activar</a>';
+                                }
+                                html += '<div class="torneo-card ' + badgeClass + '"><div class="torneo-icon" style="font-size:22px;">' + icono + '</div><div class="torneo-info"><strong>' + escapeHtml(e.nombre) + '</strong><div class="torneo-detalle" style="flex-wrap:wrap;gap:8px;"><span>\uD83D\uDCCD ' + escapeHtml(e.ciudad || '') + '</span><span>\uD83D\uDC68\u200D\uD83C\uDFEB ' + escapeHtml(e.instructor_nombre || '') + ' (' + escapeHtml(e.instructor_grado || '') + ')</span><span>\uD83D\uDCDE ' + escapeHtml(e.telefono || '') + '</span><span>\u2709 ' + escapeHtml(e.correo || '') + '</span><span class="torneo-counts">' + (parseInt(e.total_participantes) || 0) + ' participantes</span></div></div><div class="torneo-status"><span class="badge ' + badgeClass + '">' + badgeText + '</span></div><div class="torneo-accion">' + accion + '</div></div>';
+                            });
+                        } else {
+                            html = '<div class="dashboard-empty"><div class="dashboard-empty-icon">\uD83C\uDFEB</div><div class="dashboard-empty-text">No hay escuelas registradas.</div></div>';
+                        }
+                        $('#escuelasContent').html(html);
+                        $('#escuelasLoading').hide();
+                    } catch (e) {
+                        $('#escuelasLoading').html('Error parseando: ' + e.message + '<br><pre>' + escapeHtml(data) + '</pre>');
+                    }
+                },
+                error: function(xhr) {
+                    $('#escuelasLoading').html('Error de conexión. ' + xhr.status + ': ' + xhr.statusText);
+                }
+            });
+        }
+
+        $(document).on('click', '.btn-toggle-escuela', function(e) {
+            e.preventDefault();
+            var btn = $(this);
+            $.ajax({
+                type: 'POST',
+                url: 'toggleEscuela.php',
+                data: { id: btn.data('id') },
+                dataType: 'json',
+                success: function(r) {
+                    if (r.success) { cargarEscuelas(); }
+                    else { alert('Error: ' + (r.message || 'No se pudo cambiar el estado.')); }
+                },
+                error: function(xhr) {
+                    alert('Error HTTP ' + xhr.status + ': ' + xhr.statusText + '\n\n' + xhr.responseText);
+                }
+            });
+        });
+
+        $(document).on('pageshow', '#escuelas', function() {
+            cargarEscuelas();
         });
     </script>
 	<script>
@@ -649,6 +858,8 @@ else if( $_SESSION['user_level'] === 1 )
 					<li><a href="#participantes" data-rel="close">📋 Lista Participantes</a></li>
 					<li data-role="list-divider">⚖️ Jueces</li>
 					<li><a href="#Jueces" data-rel="close">📋 Lista Jueces</a></li>
+					<li data-role="list-divider">🏫 Escuelas</li>
+					<li><a href="#escuelas" data-rel="close">📋 Lista Escuelas</a></li>
 					<li data-role="list-divider">🏆 Torneos</li>
 					<li><a href="#torneos" data-rel="close">➕ Crear Torneo</a></li>
 					<li><a href="#asignarParticipantes" data-rel="close">👤 Asignar Participantes</a></li>
@@ -661,7 +872,7 @@ else if( $_SESSION['user_level'] === 1 )
 			<div>
 				<ul data-role="listview" data-inset="true">
 					<li><a href="#contacto" data-rel="close">📞 Contacto</a></li>
-					<li><a href="logout.php">🚪 Salir</a></li>
+					<li><a href="logout.php" data-ajax="false">🚪 Salir</a></li>
 				</ul>
 			</div>
 		</div>
@@ -672,13 +883,42 @@ else if( $_SESSION['user_level'] === 1 )
 					<div><h2 style="color:#1b5e20; margin:0; font-size:18px; font-weight:700;">Panel de Torneos</h2>
 					<p style="color:#558b2f; margin:2px 0 0; font-size:12px;">Gestiona el estado de tus torneos</p></div>
 				</div>
-				<div id="dashboardLoading" style="text-align:center; padding:40px; color:#999; font-size:14px;">Cargando torneos...</div>
-				<div id="dashboardContent"></div>
+				<div id="dashboardLoading" style="display:none;"></div>
+				<div id="dashboardContent"><?php
+				if (!empty($torneosData)):
+					$today = new DateTime();
+					$activos = []; $inactivos = [];
+					foreach ($torneosData as $t):
+						$fecha = new DateTime($t['fecha']);
+						$pasado = $fecha < $today;
+						$estado_efectivo = ($t['estado_efectivo'] ?? 1) && !$pasado ? 1 : 0;
+						$puede = (intval($t['total_participantes'] ?? 0) > 0 && intval($t['total_jueces'] ?? 0) > 0);
+						if ($estado_efectivo) { $activos[] = [$t, $pasado, $puede]; }
+						else { $inactivos[] = [$t, $pasado, $puede]; }
+					endforeach;
+					function renderTorneos($items, $badgeClass, $badgeText, $icono, $title) {
+						if (empty($items)) return;
+						echo '<div class="dashboard-section-title ' . $badgeClass . '">' . $title . '</div>';
+						foreach ($items as [$t, $pasado, $puede]):
+							$bc = $pasado ? 'finalizado' : $badgeClass;
+							$bt = $pasado ? 'Finalizado' : $badgeText;
+							$ic = $pasado ? '🏁' : $icono;
+							$req = intval($t['total_participantes'] ?? 0) . ' participante' . (intval($t['total_participantes'] ?? 0) !== 1 ? 's' : '') . ' · ' . intval($t['total_jueces'] ?? 0) . ' juez' . (intval($t['total_jueces'] ?? 0) !== 1 ? 'es' : '');
+							$lock = ($pasado || ($bc === 'inactivo' && !$puede)) ? '🔒' : '';
+							echo '<div class="torneo-card ' . $bc . '"><div class="torneo-icon">' . $ic . '</div><div class="torneo-info"><strong>' . htmlspecialchars($t['nombre']) . '</strong><div class="torneo-detalle"><span>📅 ' . $t['fecha'] . '</span><span>📍 ' . htmlspecialchars($t['ciudad']) . '</span><span class="torneo-counts">' . $req . '</span></div></div><div class="torneo-status"><span class="badge ' . $bc . '">' . $bt . '</span></div><div class="torneo-accion">' . $lock . '</div></div>';
+						endforeach;
+					}
+					renderTorneos($activos, 'activo', 'Activo', '🏆', '⚖️ Torneos Activos');
+					renderTorneos($inactivos, 'inactivo', 'Inactivo', '🔴', '⏳ Torneos Inactivos');
+				else: ?>
+				<div class="dashboard-empty"><div class="dashboard-empty-icon">🏆</div><div class="dashboard-empty-text">No hay torneos registrados. Crea uno desde el menú.</div></div>
+				<?php endif; ?>
+				</div>
 			</div>
 		</div>
 		<div data-role="footer" data-position="fixed" class="admin-footer">
 			<div data-role="controlgroup" data-type="horizontal" style="text-align:center;">
-				<a href="logout.php" data-role="button" data-icon="power">Salir</a>
+				<a href="logout.php" data-role="button" data-icon="power" data-ajax="false">Salir</a>
 				<a href="#contacto" data-role="button" data-icon="mail" data-rel="dialog" data-transition="pop">Contacto</a>
 			</div>
 		</div>
@@ -692,49 +932,102 @@ else if( $_SESSION['user_level'] === 1 )
         </header>
 
         <div data-role="content">
-            <!-- Botón para agregar un participante -->
             <div align="right" data-type="horizontal" data-role="controlgroup" data-mini='true'>
                 <a href="#nuevoParticipante" data-role="button" data-icon="plus" data-iconpos="right" 
                 data-rel="dialog" data-transition="pop" id="">Nuevo</a>
             </div>
             
-            <!-- Lista de participantes -->
             <div data-role="collapsibleset" id="listParticipantes" >
-                <!-- Los participantes se cargarán aquí dinámicamente -->
             </div>
         </div>
     </section>
 
-    <!-- Panel para agregar un nuevo participante -->
-    <div data-role="page" id="nuevoParticipante" data-position="center" data-display="overlay" >
-        <div data-role="header">
-            <h1>Agregar Participante</h1>
-        </div>
+    <!-- CRUD Escuelas -->
+    <section data-role="page" id="escuelas">
+        <header data-role="header" class="admin-header">
+            <a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left">Volver</a>
+            <h1>🏫 Escuelas</h1>
+        </header>
         <div data-role="content">
-            <form id="form_agregar_participante">
-                <div data-role="fieldcontain">
-                    <label for="nombre">Nombre del Participante:</label>
-                    <input type="text" id="nombre" name="nombre" placeholder="Nombre del participante" required>
+            <div id="escuelasLoading" style="text-align:center; padding:40px; color:#999; font-size:14px;">Cargando escuelas...</div>
+            <div id="escuelasContent"></div>
+        </div>
+        <center>
+            <div data-role="footer" data-position="fixed" class="admin-footer">
+                <div data-role="controlgroup" data-type="horizontal" data-position="center">
+                    <a href="logout.php" data-role="button" data-icon="power" data-ajax="false">Salir</a>
+                    <a href="#contacto" data-role="button" data-icon="mail" data-rel="dialog" data-transition="pop">Contacto</a>
                 </div>
+            </div>
+        </center>
+    </section>
 
-                <div data-role="fieldcontain">
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-                </div>
-
-                <div data-role="fieldcontain">
-                    <label for="telefono">Teléfono:</label>
-                    <input type="text" id="telefono" name="telefono" placeholder="Teléfono" required>
-                </div>
-
-                <div data-role="fieldcontain">
-                    <label for="ciudad">Ciudad:</label>
-                    <input type="text" id="ciudad" name="ciudad" placeholder="Ciudad" required>
-                </div>
-
-                <button type="submit" data-role="button">Agregar</button>
-                <a href="#participantes" data-role="button" data-rel="back">Cancelar</a>
-            </form>
+    <div data-role="page" id="nuevoParticipante" data-position="center" data-display="overlay" >
+        <div data-role="header" class="admin-header">
+            <h1>Nuevo Participante</h1>
+        </div>
+        <div data-role="content" style="padding:16px;">
+            <div class="elegant-form">
+                <div class="form-header-icon">🏫</div>
+                <div class="form-header-title">Registrar Participante</div>
+                <form id="form_agregar_participante">
+                    <div data-role="fieldcontain">
+                        <label for="nombre_f">👤 Nombre</label>
+                        <input type="text" id="nombre_f" placeholder="Nombres" required>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="apellido_f">👥 Apellido</label>
+                        <input type="text" id="apellido_f" placeholder="Apellidos" required>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="telefono_f">📱 Teléfono</label>
+                        <input type="text" id="telefono_f" placeholder="Número de teléfono" required>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="ciudad_f">📍 Ciudad</label>
+                        <input type="text" id="ciudad_f" placeholder="Ciudad de origen" required>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="edad_f">🎂 Edad</label>
+                        <input type="number" id="edad_f" placeholder="Edad" min="1" max="120">
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="categoria_f">🏆 Categoría</label>
+                        <select id="categoria_f">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Infantil">Infantil</option>
+                            <option value="Juvenil">Juvenil</option>
+                            <option value="Adulto">Adulto</option>
+                            <option value="Master">Master</option>
+                        </select>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="cinturon_f">🥋 Cinturón</label>
+                        <select id="cinturon_f">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Blanco">⚪ Blanco</option>
+                            <option value="Blanco/Amarillo">⚪🟡 Blanco/Amarillo</option>
+                            <option value="Amarillo">🟡 Amarillo</option>
+                            <option value="Amarillo/Verde">🟡🟢 Amarillo/Verde</option>
+                            <option value="Verde">🟢 Verde</option>
+                            <option value="Verde/Azul">🟢🔵 Verde/Azul</option>
+                            <option value="Azul">🔵 Azul</option>
+                            <option value="Azul/Rojo">🔵🔴 Azul/Rojo</option>
+                            <option value="Rojo">🔴 Rojo</option>
+                            <option value="Rojo/Negro">🔴⚫ Rojo/Negro</option>
+                            <option value="Negro 1er Dan">⚫ Negro 1er Dan</option>
+                            <option value="Negro 2do Dan">⚫ Negro 2do Dan</option>
+                            <option value="Negro 3er Dan+">⚫ Negro 3er Dan+</option>
+                        </select>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="escuela_f">🏫 Escuela</label>
+                        <select id="escuela_f"><option value="">-- Sin escuela --</option></select>
+                    </div>
+                    <button type="submit" data-role="button" class="ui-btn-submit">✔ Guardar Participante</button>
+                    <a href="#participantes" data-role="button" class="ui-btn-cancel" data-rel="back">✖ Cancelar</a>
+                </form>
+            </div>
         </div>
     </div>
 	
@@ -765,7 +1058,7 @@ else if( $_SESSION['user_level'] === 1 )
         <center>
             <div data-role="footer" data-position="fixed" class="admin-footer">
                 <div data-role="controlgroup" data-type="horizontal" data-position="center">
-                    <a href="logout.php" data-role="button" data-icon="power">Salir</a>
+                    <a href="logout.php" data-role="button" data-icon="power" data-ajax="false">Salir</a>
 					<a href="#contacto" data-role="button" data-icon="mail" data-rel="dialog" data-transition="pop">Contacto</a>
                 </div>
             </div>

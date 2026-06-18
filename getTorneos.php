@@ -13,7 +13,7 @@ try {
         $conn->query("ALTER TABLE torneos ADD COLUMN activo tinyint(1) NOT NULL DEFAULT 1 AFTER ciudad");
     }
 
-    $query = "SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE COALESCE(activo, 1) END as estado_efectivo FROM torneos ORDER BY fecha DESC";
+    $query = "SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE COALESCE(activo, 1) END as estado_efectivo, (SELECT COUNT(*) FROM torneoparticipante WHERE idTorneo = t.idTorneo) as total_participantes, (SELECT COUNT(*) FROM torneojueces WHERE idTorneo = t.idTorneo) as total_jueces FROM torneos t ORDER BY fecha DESC";
     $result = $conn->query($query);
 
     if (!$result) {

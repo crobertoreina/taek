@@ -67,3 +67,32 @@ CREATE TABLE IF NOT EXISTS `participante_categoria` (
 -- Columna activo para torneos
 ALTER TABLE `torneos`
   ADD COLUMN IF NOT EXISTS `activo` tinyint(1) NOT NULL DEFAULT 1 AFTER `ciudad`;
+
+-- Categoria y cinturon para participantes
+ALTER TABLE `participantes`
+  ADD COLUMN IF NOT EXISTS `categoria` varchar(50) DEFAULT NULL AFTER `ciudad`,
+  ADD COLUMN IF NOT EXISTS `cinturon` varchar(50) DEFAULT NULL AFTER `categoria`,
+  ADD COLUMN IF NOT EXISTS `id_escuela` int(11) DEFAULT NULL AFTER `cinturon`,
+  ADD COLUMN IF NOT EXISTS `edad` int(3) DEFAULT NULL AFTER `ciudad`;
+
+-- Tabla de escuelas
+CREATE TABLE IF NOT EXISTS `escuelas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(200) NOT NULL,
+  `siglas` varchar(20) DEFAULT NULL,
+  `logo` varchar(255) DEFAULT NULL,
+  `fecha_fundacion` date DEFAULT NULL,
+  `pais` varchar(100) DEFAULT NULL,
+  `departamento` varchar(100) DEFAULT NULL,
+  `ciudad` varchar(100) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
+  `instructor_nombre` varchar(200) DEFAULT NULL,
+  `instructor_grado` varchar(50) DEFAULT NULL,
+  `telefono` varchar(100) DEFAULT NULL,
+  `correo` varchar(200) DEFAULT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1,
+  `user` varchar(100) NOT NULL,
+  `pass` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user` (`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

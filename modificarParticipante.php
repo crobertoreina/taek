@@ -10,12 +10,16 @@ if (isset($_POST['id']) && isset($_POST['nombre']) && isset($_POST['apellido']) 
     $apellido = $_POST['apellido'];
     $telefono = $_POST['telefono'];
     $ciudad = $_POST['ciudad'];
+    $categoria = $_POST['categoria'] ?? null;
+    $cinturon = $_POST['cinturon'] ?? null;
+    $edad = isset($_POST['edad']) && is_numeric($_POST['edad']) ? intval($_POST['edad']) : null;
+    $id_escuela = isset($_POST['id_escuela']) && is_numeric($_POST['id_escuela']) ? intval($_POST['id_escuela']) : null;
 
     // Preparar la consulta SQL para actualizar los datos del participante
-    $query = "UPDATE participantes SET nombre = ?, apellido = ?, telefono = ?, ciudad = ? WHERE id = ?";
+    $query = "UPDATE participantes SET nombre = ?, apellido = ?, telefono = ?, ciudad = ?, edad = ?, categoria = ?, cinturon = ?, id_escuela = ? WHERE id = ?";
     
     if ($stmt = $conexion->prepare($query)) {
-        $stmt->bind_param('ssssi', $nombre, $apellido, $telefono, $ciudad, $id);
+        $stmt->bind_param('ssssissii', $nombre, $apellido, $telefono, $ciudad, $edad, $categoria, $cinturon, $id_escuela, $id);
         if ($stmt->execute()) {
             echo "Participante modificado correctamente";
         } else {
