@@ -130,6 +130,8 @@ $conn->close();
         .collapsible-participante .ui-collapsible-content input,
         .collapsible-participante .ui-collapsible-content select,
         .collapsible-participante .ui-collapsible-content textarea { color:#333 !important; background:#fff !important; }
+        .collapsible-participante .ui-collapsible-content input[type="number"] { width:100% !important; }
+        .collapsible-participante .ui-collapsible-content .ui-select .ui-btn { color:#333 !important; background:#fff !important; }
         .btn-elegant-mod { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:400; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:#388e3c; color:#fff; }
         .btn-elegant-mod:hover { background:#2e7d32; transform:translateY(-1px); }
         .btn-elegant-del { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:400; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:#c62828; color:#fff; }
