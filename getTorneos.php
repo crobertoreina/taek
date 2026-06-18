@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 try {
     $conn = new mysqli('localhost', 'root', '', 'taekdb');
     if ($conn->connect_error) {
-        throw new Exception('Error de conexión BD: ' . $conn->connect_error);
+        throw new Exception('Error BD: ' . $conn->connect_error);
     }
     $conn->set_charset('utf8');
 
@@ -16,6 +16,10 @@ try {
     $query = "SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE COALESCE(activo, 1) END as estado_efectivo FROM torneos ORDER BY fecha DESC";
     $result = $conn->query($query);
 
+    if (!$result) {
+        throw new Exception('Error en consulta: ' . $conn->error);
+    }
+
     $torneos = [];
     while ($row = $result->fetch_assoc()) {
         $torneos[] = $row;
@@ -23,7 +27,7 @@ try {
 
     echo json_encode($torneos);
     $conn->close();
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
 ?>
