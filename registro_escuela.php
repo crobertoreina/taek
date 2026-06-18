@@ -32,10 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($check->get_result()->num_rows > 0) {
             $error = 'El correo electrónico ya está registrado.';
         } else {
-            $stmt = $conexion->prepare("INSERT INTO escuelas (nombre, siglas, fecha_fundacion, pais, departamento, ciudad, direccion, instructor_nombre, instructor_grado, telefono, correo, user, pass, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)");
+            $stmt = $conexion->prepare("INSERT INTO escuelas (nombre, siglas, fecha_fundacion, pais, departamento, ciudad, direccion, instructor_nombre, instructor_grado, telefono, correo, user, pass, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
             $stmt->bind_param('sssssssssssss', $nombre, $siglas, $fecha_fundacion, $pais, $departamento, $ciudad, $direccion, $instructor_nombre, $instructor_grado, $telefono, $correo, $correo, $pass);
             if ($stmt->execute()) {
-                $success = 'Escuela registrada correctamente. Recibirás una notificación cuando el administrador active tu cuenta.';
+                $success = 'Dojang registrado correctamente. Ya puedes iniciar sesión.';
             } else {
                 $error = 'Error al registrar: ' . $stmt->error;
             }
@@ -51,7 +51,7 @@ $conexion->close();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Registro de Escuela</title>
+    <title>Registro de Dojang</title>
     <link rel="stylesheet" href="themes/takwondoTheme.min.css" />
     <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
     <link rel="stylesheet" href="lib/jquery.mobile.structure-1.4.5.min.css" />
@@ -84,8 +84,8 @@ $conexion->close();
         <div data-role="content" style="padding:10px;">
             <div class="reg-container">
                 <div class="form-icon"><img src="images/sonbae.jpg" alt="Logo"></div>
-                <h2>Registro de Escuela</h2>
-                <p class="sub">Completa los datos para registrar tu escuela</p>
+                <h2>Registro de Dojang</h2>
+                <p class="sub">Completa los datos para registrar tu Dojang</p>
 
                 <?php if ($error): ?><div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
                 <?php if ($success): ?><div class="success"><?= $success ?></div><?php endif; ?>
@@ -101,9 +101,9 @@ $conexion->close();
                         <input type="password" name="pass" required placeholder="Contraseña">
                     </div>
 
-                    <div class="section-title">Datos de la Escuela</div>
+                    <div class="section-title">Datos del Dojang</div>
                     <div class="field">
-                        <label>Nombre de la Escuela *</label>
+                        <label>Nombre del Dojang *</label>
                         <input type="text" name="nombre" required placeholder="Nombre completo">
                     </div>
                     <div class="field half">
@@ -158,7 +158,7 @@ $conexion->close();
                         <input type="text" name="telefono" placeholder="Teléfono de contacto">
                     </div>
 
-                    <input type="submit" value="Registrar Escuela">
+                    <input type="submit" value="Registrar Dojang">
                 </form>
                 <div class="login-link">¿Ya tienes cuenta? <a href="login.php">Iniciar sesión</a></div>
             </div>

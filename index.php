@@ -156,7 +156,7 @@ $conn->close();
             var torneosData = <?= json_encode($torneosData) ?>;
 
             function escuelaOpts(sel) {
-                var h = '<option value="">-- Sin escuela --</option>';
+                var h = '<option value="">-- Sin Dojang --</option>';
                 escuelas.forEach(function(e) { h += '<option value="' + e.id + '"' + (sel == e.id ? ' selected' : '') + '>' + e.nombre + (e.siglas ? ' (' + e.siglas + ')' : '') + '</option>'; });
                 return h;
             }
@@ -197,7 +197,7 @@ $conn->close();
                                                 '<div data-role="fieldcontain"><label for="edad' + p.id + '">🎂 Edad</label><input type="number" id="edad' + p.id + '" value="' + (p.edad || '') + '" min="1" max="120"></div>' +
                                                 '<div data-role="fieldcontain"><label for="categoria' + p.id + '">🏆 Categor\u00eda</label>' + sel(p.id, 'categoria', p.categoria, cats) + '</div>' +
                                                 '<div data-role="fieldcontain"><label for="cinturon' + p.id + '">🥋 Cintur\u00f3n</label>' + sel(p.id, 'cinturon', p.cinturon, belts) + '</div>' +
-                                                '<div data-role="fieldcontain"><label for="escuela' + p.id + '">🏫 Escuela</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
+                                                '<div data-role="fieldcontain"><label for="escuela' + p.id + '">🏫 Dojang</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
                                                 '<div class="btn-group"><a href="#" data-role="button" data-inline="true" data-mini="true" data-icon="edit" data-iconpos="right" class="button_mod" data-id="' + p.id + '">Modificar</a>' +
                                                 '<a href="#aviso_borrar" data-role="button" data-inline="true" data-mini="true" data-icon="delete" data-iconpos="right" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '">Eliminar</a></div>' +
                                             '</form>' +
@@ -345,7 +345,7 @@ $conn->close();
 
             // Populate escuela selects
             function poblarEscuelas() {
-                var opts = '<option value="">-- Sin escuela --</option>';
+                var opts = '<option value="">-- Sin Dojang --</option>';
                 escuelas.forEach(function(e) { opts += '<option value="' + e.id + '">' + e.nombre + (e.siglas ? ' (' + e.siglas + ')' : '') + '</option>'; });
                 $('#escuela_f').html(opts);
                 if ($.fn.selectmenu) $('#escuela_f').selectmenu('refresh');
@@ -601,7 +601,7 @@ $conn->close();
                                 html += '<div class="torneo-card ' + badgeClass + '"><div class="torneo-icon" style="font-size:22px;">' + icono + '</div><div class="torneo-info"><strong>' + escapeHtml(e.nombre) + '</strong><div class="torneo-detalle" style="flex-wrap:wrap;gap:8px;"><span>\uD83D\uDCCD ' + escapeHtml(e.ciudad || '') + '</span><span>\uD83D\uDC68\u200D\uD83C\uDFEB ' + escapeHtml(e.instructor_nombre || '') + ' (' + escapeHtml(e.instructor_grado || '') + ')</span><span>\uD83D\uDCDE ' + escapeHtml(e.telefono || '') + '</span><span>\u2709 ' + escapeHtml(e.correo || '') + '</span><span class="torneo-counts">' + (parseInt(e.total_participantes) || 0) + ' participantes</span></div></div><div class="torneo-status"><span class="badge ' + badgeClass + '">' + badgeText + '</span></div><div class="torneo-accion">' + accion + '</div></div>';
                             });
                         } else {
-                            html = '<div class="dashboard-empty"><div class="dashboard-empty-icon">\uD83C\uDFEB</div><div class="dashboard-empty-text">No hay escuelas registradas.</div></div>';
+                            html = '<div class="dashboard-empty"><div class="dashboard-empty-icon">\uD83C\uDFEB</div><div class="dashboard-empty-text">No hay Dojangs registrados.</div></div>';
                         }
                         $('#escuelasContent').html(html);
                         $('#escuelasLoading').hide();
@@ -876,8 +876,8 @@ $conn->close();
 					<li><a href="#participantes" data-rel="close">📋 Lista Participantes</a></li>
 					<li data-role="list-divider">⚖️ Jueces</li>
 					<li><a href="#Jueces" data-rel="close">📋 Lista Jueces</a></li>
-					<li data-role="list-divider">🏫 Escuelas</li>
-					<li><a href="#escuelas" data-rel="close">📋 Lista Escuelas</a></li>
+					<li data-role="list-divider">🏫 Dojangs</li>
+					<li><a href="#escuelas" data-rel="close">📋 Lista Dojangs</a></li>
 					<li data-role="list-divider">🏆 Torneos</li>
 					<li><a href="#torneos" data-rel="close">➕ Crear Torneo</a></li>
 					<li><a href="#asignarParticipantes" data-rel="close">👤 Asignar Participantes</a></li>
@@ -964,10 +964,10 @@ $conn->close();
     <section data-role="page" id="escuelas">
         <header data-role="header" class="admin-header">
             <a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left">Volver</a>
-            <h1>🏫 Escuelas</h1>
+            <h1>🏫 Dojangs</h1>
         </header>
         <div data-role="content">
-            <div id="escuelasLoading" style="text-align:center; padding:40px; color:#999; font-size:14px;">Cargando escuelas...</div>
+            <div id="escuelasLoading" style="text-align:center; padding:40px; color:#999; font-size:14px;">Cargando Dojangs...</div>
             <div id="escuelasContent"></div>
         </div>
         <center>
@@ -1039,8 +1039,8 @@ $conn->close();
                         </select>
                     </div>
                     <div data-role="fieldcontain">
-                        <label for="escuela_f">🏫 Escuela</label>
-                        <select id="escuela_f"><option value="">-- Sin escuela --</option></select>
+                        <label for="escuela_f">🏫 Dojang</label>
+                        <select id="escuela_f"><option value="">-- Sin Dojang --</option></select>
                     </div>
                     <button type="submit" data-role="button" class="ui-btn-submit">✔ Guardar Participante</button>
                     <a href="#participantes" data-role="button" class="ui-btn-cancel" data-rel="back">✖ Cancelar</a>

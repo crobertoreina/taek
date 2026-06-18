@@ -162,7 +162,7 @@ $conexion->close();
             ?>
         </div>
         <div class="login-footer" style="display:flex;flex-direction:column;gap:8px;align-items:center;">
-            <a href="registro_escuela.php" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border-radius:12px;text-decoration:none;font-weight:600;font-size:13px;box-shadow:0 2px 8px rgba(76,175,80,0.2);">🏫 Registrar Escuela</a>
+            <a href="registro_escuela.php" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border-radius:12px;text-decoration:none;font-weight:600;font-size:13px;box-shadow:0 2px 8px rgba(76,175,80,0.2);">🏫 Registrar Dojang</a>
         </div>
         <div class="login-copy">&copy; CRR 2025</div>
     </div>
