@@ -133,6 +133,11 @@ $conn->close();
         .collapsible-participante .ui-collapsible-content input[type="number"] { width:100% !important; }
         .collapsible-participante .ui-collapsible-content .ui-select .ui-btn { color:#333 !important; background:#fff !important; }
         .btn-group { display:flex; justify-content:center; gap:10px; margin-top:14px; }
+        .btn-group .button_mod.ui-btn { background:#4caf50 !important; border-color:#388e3c !important; color:#fff !important; text-shadow:none !important; }
+        .btn-group .button_mod.ui-btn:hover { background:#388e3c !important; }
+        .btn-group .button_del.ui-btn { background:#e53935 !important; border-color:#c62828 !important; color:#fff !important; text-shadow:none !important; }
+        .btn-group .button_del.ui-btn:hover { background:#c62828 !important; }
+        .btn-group .ui-btn .ui-icon { background-color:rgba(255,255,255,0.3) !important; }
     </style>
     <script>
         $(document).ready(function() {
