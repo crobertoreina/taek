@@ -72,9 +72,11 @@ else if( $_SESSION['user_level'] === 1 )
         .dashboard-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
         .dashboard-empty-text { font-size:15px; color:#999; }
         .admin-footer { background: rgba(255,255,255,0.92); backdrop-filter:blur(8px); border-top: 1px solid rgba(0,0,0,0.06); box-shadow:0 -2px 12px rgba(0,0,0,0.04); padding:4px 0; }
-        .admin-footer .ui-btn { background: linear-gradient(135deg, #2e7d32, #4caf50) !important; color: #fff !important; border: none !important; border-radius: 20px !important; margin:4px 6px !important; padding:8px 18px !important; font-size:12px !important; font-weight:600 !important; letter-spacing:0.3px !important; transition:all 0.15s ease !important; box-shadow:0 2px 6px rgba(76,175,80,0.2) !important; }
+        .admin-footer .ui-btn { background: linear-gradient(135deg, #2e7d32, #4caf50) !important; color: #fff !important; border: none !important; border-radius: 20px !important; margin:4px 6px !important; padding:8px 18px 8px 38px !important; font-size:12px !important; font-weight:600 !important; letter-spacing:0.3px !important; transition:all 0.15s ease !important; box-shadow:0 2px 6px rgba(76,175,80,0.2) !important; }
         .admin-footer .ui-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(76,175,80,0.3) !important; }
         .admin-footer .ui-btn:active { transform:translateY(0); }
+        .admin-footer .ui-btn .ui-btn-text { display:inline-block; margin-left:4px; }
+        .admin-footer .ui-btn .ui-icon { width:16px !important; height:16px !important; margin-top:-8px !important; background-size:12px !important; left:14px !important; }
         .admin-panel { background: #fff; }
         .admin-panel .ui-header { background: #4caf50; }
         .admin-panel .ui-header h1 { color: #fff; }
