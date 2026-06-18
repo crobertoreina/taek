@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 
 $conn = require 'conexion.php';
 
-$query = "SELECT * FROM torneos ORDER BY fecha DESC";
+$query = "SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE activo END as estado_efectivo FROM torneos ORDER BY fecha DESC";
 $result = $conn->query($query);
 
 $torneos = [];

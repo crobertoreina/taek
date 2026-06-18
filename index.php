@@ -50,6 +50,9 @@ else if( $_SESSION['user_level'] === 1 )
         .torneo-card.activo::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #4caf50, #81c784); opacity:0.5; }
         .torneo-card.inactivo { border-left:5px solid #bdbdbd; opacity:0.75; }
         .torneo-card.inactivo::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #bdbdbd, #e0e0e0); opacity:0.4; }
+        .torneo-card.finalizado { border-left:5px solid #90a4ae; opacity:0.6; }
+        .torneo-card.finalizado::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, #90a4ae, #cfd8dc); opacity:0.4; }
+        .torneo-card.finalizado .torneo-icon { background:linear-gradient(135deg, #eceff1, #cfd8dc); }
         .torneo-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-right:14px; font-size:18px; flex-shrink:0; }
         .torneo-card.activo .torneo-icon { background:linear-gradient(135deg, #e8f5e9, #c8e6c9); }
         .torneo-card.inactivo .torneo-icon { background:linear-gradient(135deg, #f5f5f5, #eeeeee); }
@@ -62,12 +65,15 @@ else if( $_SESSION['user_level'] === 1 )
         .badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
         .badge.activo { background:linear-gradient(135deg, #e8f5e9, #c8e6c9); color:#2e7d32; box-shadow:0 1px 3px rgba(76,175,80,0.15); }
         .badge.inactivo { background:linear-gradient(135deg, #f5f5f5, #e0e0e0); color:#757575; }
+        .badge.finalizado { background:linear-gradient(135deg, #eceff1, #cfd8dc); color:#546e7a; }
         .btn-toggle { display:inline-block; padding:7px 16px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:600; border:none; cursor:pointer; transition:all 0.15s ease; }
         .btn-toggle:hover { transform:scale(1.04); }
         .torneo-card.activo .btn-toggle { background:#ffebee; color:#c62828; border:1px solid #ffcdd2; }
         .torneo-card.activo .btn-toggle:hover { background:#ffcdd2; }
         .torneo-card.inactivo .btn-toggle { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; }
         .torneo-card.inactivo .btn-toggle:hover { background:#c8e6c9; }
+        .torneo-card.finalizado .btn-toggle { background:#eceff1; color:#546e7a; border:1px solid #cfd8dc; }
+        .torneo-card.finalizado .btn-toggle:hover { background:#cfd8dc; }
         .dashboard-empty { text-align:center; padding:60px 20px; }
         .dashboard-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
         .dashboard-empty-text { font-size:15px; color:#999; }
@@ -289,9 +295,19 @@ else if( $_SESSION['user_level'] === 1 )
                             var inactivos = [];
 
                             if (Array.isArray(torneos) && torneos.length > 0) {
+                                var today = new Date();
+                                today.setHours(0,0,0,0);
+                                function esPasada(fechaStr) {
+                                    var partes = fechaStr.split('-');
+                                    var d = new Date(partes[0], partes[1]-1, partes[2]);
+                                    return d < today;
+                                }
+
                                 torneos.forEach(function(t) {
+                                    t.estado_efectivo = t.estado_efectivo !== undefined ? parseInt(t.estado_efectivo) : 0;
                                     t.activo = t.activo !== undefined ? parseInt(t.activo) : 1;
-                                    if (t.activo === 1) {
+                                    t.pasado = esPasada(t.fecha);
+                                    if (t.estado_efectivo === 1 && !t.pasado) {
                                         activos.push(t);
                                     } else {
                                         inactivos.push(t);
@@ -306,7 +322,7 @@ else if( $_SESSION['user_level'] === 1 )
                                         html += '<div class="torneo-info"><strong>' + t.nombre + '</strong>';
                                         html += '<div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + t.ciudad + '</span></div></div>';
                                         html += '<div class="torneo-status"><span class="badge activo">Activo</span></div>';
-                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '" data-activo="1">Desactivar</a></div>';
+                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '">Desactivar</a></div>';
                                         html += '</div>';
                                     });
                                 }
@@ -314,12 +330,17 @@ else if( $_SESSION['user_level'] === 1 )
                                 if (inactivos.length > 0) {
                                     html += '<div class="dashboard-section-title inactivos">\u23F3 Torneos Inactivos</div>';
                                     inactivos.forEach(function(t) {
-                                        html += '<div class="torneo-card inactivo">';
-                                        html += '<div class="torneo-icon">\uD83D\uDD34</div>';
+                                        var esFinalizado = t.pasado;
+                                        var badgeClass = esFinalizado ? 'finalizado' : 'inactivo';
+                                        var badgeText = esFinalizado ? 'Finalizado' : 'Inactivo';
+                                        var icono = esFinalizado ? '\uD83C\uDFC1' : '\uD83D\uDD34';
+                                        var toggleText = t.activo === 1 ? 'Desactivar' : 'Activar';
+                                        html += '<div class="torneo-card ' + (esFinalizado ? 'finalizado' : 'inactivo') + '">';
+                                        html += '<div class="torneo-icon">' + icono + '</div>';
                                         html += '<div class="torneo-info"><strong>' + t.nombre + '</strong>';
                                         html += '<div class="torneo-detalle"><span>\uD83D\uDCC5 ' + t.fecha + '</span><span>\uD83D\uDCCD ' + t.ciudad + '</span></div></div>';
-                                        html += '<div class="torneo-status"><span class="badge inactivo">Inactivo</span></div>';
-                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '" data-activo="0">Activar</a></div>';
+                                        html += '<div class="torneo-status"><span class="badge ' + badgeClass + '">' + badgeText + '</span></div>';
+                                        html += '<div class="torneo-accion"><a href="#" class="btn-toggle" data-id="' + t.idTorneo + '">' + toggleText + '</a></div>';
                                         html += '</div>';
                                     });
                                 }
@@ -348,11 +369,16 @@ else if( $_SESSION['user_level'] === 1 )
                     type: 'POST',
                     url: 'toggleTorneo.php',
                     data: { id: id },
+                    dataType: 'json',
                     success: function(resp) {
-                        cargarDashboard();
+                        if (resp.success) {
+                            cargarDashboard();
+                        } else {
+                            alert('Error: ' + (resp.message || 'No se pudo cambiar el estado.'));
+                        }
                     },
-                    error: function() {
-                        alert('Error al cambiar estado.');
+                    error: function(xhr) {
+                        alert('Error de conexión: ' + xhr.statusText);
                     }
                 });
             });
