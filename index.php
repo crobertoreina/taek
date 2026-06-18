@@ -183,15 +183,15 @@ $conn->close();
                                         $('<div data-role="collapsible" class="collapsible-participante" id="participante' + p.id + '">' +
                                             '<h3>' + p.nombre + ' ' + p.apellido + escHeader + edadLabel + '</h3>' +
                                             '<form>' +
-                                                '<div data-role="fieldcontain"><label for="id' + p.id + '">ID</label><input type="text" id="id' + p.id + '" value="' + p.id + '" disabled></div>' +
-                                                '<div data-role="fieldcontain"><label for="nombre' + p.id + '">Nombre</label><input type="text" id="nombre' + p.id + '" value="' + p.nombre + '"></div>' +
-                                                '<div data-role="fieldcontain"><label for="apellido' + p.id + '">Apellido</label><input type="text" id="apellido' + p.id + '" value="' + p.apellido + '"></div>' +
-                                                '<div data-role="fieldcontain"><label for="telefono' + p.id + '">Tel\u00e9fono</label><input type="text" id="telefono' + p.id + '" value="' + p.telefono + '"></div>' +
-                                                '<div data-role="fieldcontain"><label for="ciudad' + p.id + '">Ciudad</label><input type="text" id="ciudad' + p.id + '" value="' + p.ciudad + '"></div>' +
-                                                '<div data-role="fieldcontain"><label for="edad' + p.id + '">Edad</label><input type="number" id="edad' + p.id + '" value="' + (p.edad || '') + '" min="1" max="120"></div>' +
-                                                '<div data-role="fieldcontain"><label for="categoria' + p.id + '">Categor\u00eda</label>' + sel(p.id, 'categoria', p.categoria, cats) + '</div>' +
-                                                '<div data-role="fieldcontain"><label for="cinturon' + p.id + '">Cintur\u00f3n</label>' + sel(p.id, 'cinturon', p.cinturon, belts) + '</div>' +
-                                                '<div data-role="fieldcontain"><label for="escuela' + p.id + '">\uD83C\uDFEB Escuela</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
+                                                '<div data-role="fieldcontain"><label for="id' + p.id + '">📋 ID</label><input type="text" id="id' + p.id + '" value="' + p.id + '" disabled></div>' +
+                                                '<div data-role="fieldcontain"><label for="nombre' + p.id + '">👤 Nombre</label><input type="text" id="nombre' + p.id + '" value="' + p.nombre + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="apellido' + p.id + '">👥 Apellido</label><input type="text" id="apellido' + p.id + '" value="' + p.apellido + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="telefono' + p.id + '">📱 Tel\u00e9fono</label><input type="text" id="telefono' + p.id + '" value="' + p.telefono + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="ciudad' + p.id + '">📍 Ciudad</label><input type="text" id="ciudad' + p.id + '" value="' + p.ciudad + '"></div>' +
+                                                '<div data-role="fieldcontain"><label for="edad' + p.id + '">🎂 Edad</label><input type="number" id="edad' + p.id + '" value="' + (p.edad || '') + '" min="1" max="120"></div>' +
+                                                '<div data-role="fieldcontain"><label for="categoria' + p.id + '">🏆 Categor\u00eda</label>' + sel(p.id, 'categoria', p.categoria, cats) + '</div>' +
+                                                '<div data-role="fieldcontain"><label for="cinturon' + p.id + '">🥋 Cintur\u00f3n</label>' + sel(p.id, 'cinturon', p.cinturon, belts) + '</div>' +
+                                                '<div data-role="fieldcontain"><label for="escuela' + p.id + '">🏫 Escuela</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
                                                 '<div class="btn-group"><a href="#" data-role="button" data-inline="true" data-mini="true" data-icon="edit" data-iconpos="right" class="button_mod" data-id="' + p.id + '">Modificar</a>' +
                                                 '<a href="#aviso_borrar" data-role="button" data-inline="true" data-mini="true" data-icon="delete" data-iconpos="right" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '">Eliminar</a></div>' +
                                             '</form>' +
