@@ -1,7 +1,14 @@
 {
   "people": [],
   "projects": [
-    "Poomsae"
+    "Taekwondo Poomsae Evaluacion"
   ],
-  "topics": []
+  "topics": [
+    "torneos",
+    "participantes",
+    "jueces",
+    "poomsae",
+    "evaluacion",
+    "escuelas"
+  ]
 }

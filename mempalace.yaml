@@ -1,35 +1,81 @@
 wing: taek
 rooms:
-- name: backend
-  description: Files from db/
+- name: torneos
+  description: Gestion de torneos (CRUD, toggle, listing)
   keywords:
-  - backend
+  - torneo
+  - torneos
+  - tournament
+- name: participantes
+  description: Gestion de participantes (CRUD, listing, busqueda)
+  keywords:
+  - participante
+  - participantes
+  - participant
+- name: jueces
+  description: Gestion de jueces (CRUD, listing, jurado)
+  keywords:
+  - juez
+  - jueces
+  - judge
+  - jurado
+- name: asignaciones
+  description: Asignacion de jueces y participantes a torneos
+  keywords:
+  - asignar
+  - asignacion
+  - torneoparticipante
+  - torneojueces
+- name: evaluacion
+  description: Evaluacion de poomsae (puntajes, votacion)
+  keywords:
+  - evaluar
+  - evaluacion
+  - poomsae
+  - votacion
+  - puntos
+- name: escuelas
+  description: Gestion de escuelas (CRUD, toggle, registro)
+  keywords:
+  - escuela
+  - escuelas
+  - school
+- name: auth
+  description: Autenticacion y sesion de usuarios
+  keywords:
+  - login
+  - logout
+  - session
+  - user
+- name: db
+  description: Archivos de base de datos SQL
+  keywords:
   - db
-- name: images
-  description: Files from images/
+  - sql
+  - database
+  - migracion
+- name: ui
+  description: Assets de frontend (imagenes, themes, librerias JS, PWA)
   keywords:
+  - assets
   - images
-  - images
-- name: index.redirect
-  description: Files from index.redirect/
-  keywords:
-  - index.redirect
-  - index.redirect
-- name: lib
-  description: Files from lib/
-  keywords:
   - lib
-  - lib
+  - themes
+  - pwa
+  - manifest
+  - sw
+- name: config
+  description: Archivos de configuracion raiz
+  keywords:
+  - config
+  - json
+  - yaml
 - name: old
-  description: Files from old/
+  description: Archivos antiguos/obsoletos
   keywords:
   - old
-  - old
-- name: themes
-  description: Files from themes/
-  keywords:
-  - themes
-  - themes
+  - obsolete
+  - legacy
 - name: general
-  description: Files that don't fit other rooms
+  description: Archivos que no encajan en otras salas
   keywords: []
