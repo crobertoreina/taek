@@ -187,8 +187,8 @@ $conn->close();
                                                 '<div data-role="fieldcontain"><label for="categoria' + p.id + '">Categor\u00eda</label>' + sel(p.id, 'categoria', p.categoria, cats) + '</div>' +
                                                 '<div data-role="fieldcontain"><label for="cinturon' + p.id + '">Cintur\u00f3n</label>' + sel(p.id, 'cinturon', p.cinturon, belts) + '</div>' +
                                                 '<div data-role="fieldcontain"><label for="escuela' + p.id + '">\uD83C\uDFEB Escuela</label><select id="escuela' + p.id + '">' + escuelaOpts(p.id_escuela) + '</select></div>' +
-                                                '<div class="btn-group"><a href="#" data-role="button" data-inline="true" data-mini="true" class="button_mod" data-id="' + p.id + '">✏ Modificar</a>' +
-                                                '<a href="#aviso_borrar" data-role="button" data-inline="true" data-mini="true" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '">🗑 Eliminar</a></div>' +
+                                                '<div class="btn-group"><a href="#" data-role="button" data-inline="true" data-mini="true" data-icon="edit" data-iconpos="right" class="button_mod" data-id="' + p.id + '">Modificar</a>' +
+                                                '<a href="#aviso_borrar" data-role="button" data-inline="true" data-mini="true" data-icon="delete" data-iconpos="right" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + p.id + '">Eliminar</a></div>' +
                                             '</form>' +
                                         '</div>')
                                     );
