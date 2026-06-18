@@ -74,7 +74,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         if ($r2->num_rows > 0) {
             $row = $r2->fetch_assoc();
             if (intval($row['estado']) !== 1) {
-                $error_message = "Tu cuenta está pendiente de activación. El administrador te notificará cuando esté lista.";
+                $error_message = "Tu cuenta no ha sido confirmada. Revisa tu correo y haz clic en el enlace de confirmación.";
             } elseif ($password === $row['pass']) {
                 $_SESSION['escuela_id'] = $row['id'];
                 $_SESSION['escuela_nombre'] = $row['nombre'];

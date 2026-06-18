@@ -32,10 +32,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($check->get_result()->num_rows > 0) {
             $error = 'El correo electrónico ya está registrado.';
         } else {
-            $stmt = $conexion->prepare("INSERT INTO escuelas (nombre, siglas, fecha_fundacion, pais, departamento, ciudad, direccion, instructor_nombre, instructor_grado, telefono, correo, user, pass, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
-            $stmt->bind_param('sssssssssssss', $nombre, $siglas, $fecha_fundacion, $pais, $departamento, $ciudad, $direccion, $instructor_nombre, $instructor_grado, $telefono, $correo, $correo, $pass);
+            $token = bin2hex(random_bytes(32));
+            $token_expiracion = date('Y-m-d H:i:s', strtotime('+24 hours'));
+            $stmt = $conexion->prepare("INSERT INTO escuelas (nombre, siglas, fecha_fundacion, pais, departamento, ciudad, direccion, instructor_nombre, instructor_grado, telefono, correo, user, pass, estado, token, token_expiracion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)");
+            $stmt->bind_param('sssssssssssssss', $nombre, $siglas, $fecha_fundacion, $pais, $departamento, $ciudad, $direccion, $instructor_nombre, $instructor_grado, $telefono, $correo, $correo, $pass, $token, $token_expiracion);
             if ($stmt->execute()) {
-                $success = 'Dojang registrado correctamente. Ya puedes iniciar sesión.';
+                require_once __DIR__ . '/mail_config.php';
+                if (enviarCorreoConfirmacion($correo, $nombre, $token)) {
+                    $success = 'Dojang registrado correctamente. Revisa tu correo para confirmar tu cuenta.';
+                } else {
+                    $success = 'Dojang registrado. No se pudo enviar el correo de confirmación. Contacta al administrador.';
+                }
+            } else {
+                $error = 'Error al registrar: ' . $stmt->error;
+            }
+            $stmt->close();
+        }
+        $check->close();
+    }
+}
+$conexion->close();
             } else {
                 $error = 'Error al registrar: ' . $stmt->error;
             }

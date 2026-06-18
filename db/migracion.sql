@@ -96,3 +96,8 @@ CREATE TABLE IF NOT EXISTS `escuelas` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user` (`user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Token de confirmacion por email
+ALTER TABLE `escuelas`
+  ADD COLUMN IF NOT EXISTS `token` varchar(64) DEFAULT NULL AFTER `pass`,
+  ADD COLUMN IF NOT EXISTS `token_expiracion` datetime DEFAULT NULL AFTER `token`;
