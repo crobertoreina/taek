@@ -8,3 +8,9 @@ Thumbs.db
 
 # Archives
 *.zip
+
+# Test / temp files
+response.html
+test_output.html
+cookie.txt
+cookies.txt
