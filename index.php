@@ -34,9 +34,13 @@ else if( $_SESSION['user_level'] === 1 )
         .ui-collapsible-content { padding: 10px; }
         body { background: #f5f5dc; }
         .ui-page { background: #f5f5dc; }
-        .admin-header { background: linear-gradient(135deg, #4caf50, #388e3c); border-bottom: 3px solid #ffeb3b; }
-        .admin-header h1 { color: #fff; text-shadow: none; }
-        .admin-header .ui-btn { color: #fff !important; background: rgba(255,255,255,0.15) !important; border: none !important; }
+        .admin-header { background: linear-gradient(135deg, #2e7d32, #4caf50); border-bottom: none; box-shadow:0 2px 12px rgba(0,0,0,0.12); }
+        .admin-header h1 { color: #fff; text-shadow: none; font-size:18px; font-weight:600; letter-spacing:0.5px; }
+        .admin-header .ui-btn { color: #fff !important; background: rgba(255,255,255,0.12) !important; border: 1px solid rgba(255,255,255,0.2) !important; border-radius: 22px !important; margin:6px 4px !important; padding:6px 14px !important; font-size:12px !important; font-weight:500 !important; transition:all 0.15s ease !important; box-shadow:none !important; }
+        .admin-header .ui-btn:hover { background: rgba(255,255,255,0.25) !important; border-color: rgba(255,255,255,0.4) !important; }
+        .admin-header .ui-btn.ui-icon-bars { padding-left:36px !important; }
+        .admin-header .ui-btn.ui-icon-gear { padding-right:36px !important; }
+        .admin-header .ui-btn.ui-icon-arrow-l { padding-left:32px !important; }
         .dashboard-section-title { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; padding:10px 4px 6px; margin:20px 0 6px; }
         .dashboard-section-title.activos { color:#2e7d32; border-bottom:2px solid #4caf50; }
         .dashboard-section-title.inactivos { color:#757575; border-bottom:2px solid #bdbdbd; }
@@ -67,8 +71,10 @@ else if( $_SESSION['user_level'] === 1 )
         .dashboard-empty { text-align:center; padding:60px 20px; }
         .dashboard-empty-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
         .dashboard-empty-text { font-size:15px; color:#999; }
-        .admin-footer { background: #fff; border-top: 1px solid #e0e0e0; }
-        .admin-footer .ui-btn { background: #4caf50 !important; color: #fff !important; border: none !important; }
+        .admin-footer { background: rgba(255,255,255,0.92); backdrop-filter:blur(8px); border-top: 1px solid rgba(0,0,0,0.06); box-shadow:0 -2px 12px rgba(0,0,0,0.04); padding:4px 0; }
+        .admin-footer .ui-btn { background: linear-gradient(135deg, #2e7d32, #4caf50) !important; color: #fff !important; border: none !important; border-radius: 20px !important; margin:4px 6px !important; padding:8px 18px !important; font-size:12px !important; font-weight:600 !important; letter-spacing:0.3px !important; transition:all 0.15s ease !important; box-shadow:0 2px 6px rgba(76,175,80,0.2) !important; }
+        .admin-footer .ui-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(76,175,80,0.3) !important; }
+        .admin-footer .ui-btn:active { transform:translateY(0); }
         .admin-panel { background: #fff; }
         .admin-panel .ui-header { background: #4caf50; }
         .admin-panel .ui-header h1 { color: #fff; }
@@ -820,7 +826,7 @@ else if( $_SESSION['user_level'] === 1 )
     <!-- CRUD Participantes -->
     <section data-role="page" id="participantes">
 		<header data-role="header" class="admin-header">
-			<a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left" style="color:#fff;">Volver</a>
+			<a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left">Volver</a>
             <h1>Participantes</h1>
         </header>
 
@@ -874,7 +880,7 @@ else if( $_SESSION['user_level'] === 1 )
 	<!-- CRUD Torneos -->
     <section data-role="page" id="torneos">
         <header data-role="header" class="admin-header">
-		<a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left" style="color:#fff;">Volver</a>
+		<a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left">Volver</a>
             <h1>Torneos</h1>
         </header>
 
@@ -943,7 +949,7 @@ else if( $_SESSION['user_level'] === 1 )
 	<!-- CRUD Jueces -->
     <section data-role="page" id="Jueces">
         <header data-role="header" class="admin-header">
-		<a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left" style="color:#fff;">Volver</a>
+		<a href="#mainPage" data-role="button" data-icon="arrow-l" data-iconpos="left">Volver</a>
             <h1>Jueces</h1>
         </header>
 
