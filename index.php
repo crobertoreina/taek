@@ -77,8 +77,17 @@ else if( $_SESSION['user_level'] === 1 )
         .admin-footer .ui-btn:active { transform:translateY(0); }
         .admin-footer .ui-btn .ui-btn-text { display:inline-block; margin-left:4px; }
         .admin-footer .ui-btn .ui-icon { width:16px !important; height:16px !important; margin-top:-8px !important; background-size:12px !important; left:14px !important; }
-        .admin-panel { background: #fff; }
-        .admin-panel .ui-header { background: #4caf50; }
+        .admin-panel { background: #fff; border:none !important; }
+        .admin-panel .ui-header { background: linear-gradient(135deg, #2e7d32, #4caf50); border:none; min-height:52px; }
+        .admin-panel .ui-header h1 { color:#fff; font-size:16px; font-weight:600; letter-spacing:0.5px; text-shadow:none; }
+        .admin-panel .ui-listview { margin:8px 12px !important; border-radius:12px !important; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+        .admin-panel .ui-listview .ui-li-divider { background:linear-gradient(135deg, #f5f5f5, #e8f5e9); color:#2e7d32; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; padding:10px 16px !important; border:none; border-top:1px solid #e8e8e8; }
+        .admin-panel .ui-listview .ui-li-divider:first-child { border-top:none; }
+        .admin-panel .ui-listview li { border:none !important; margin:0 !important; }
+        .admin-panel .ui-listview li a { padding:12px 16px !important; font-size:14px; color:#444; font-weight:500; border:none !important; border-bottom:1px solid #f0f0f0 !important; margin:0 !important; transition:background 0.12s ease; }
+        .admin-panel .ui-listview li a:hover { background:#f5f5f5; }
+        .admin-panel .ui-listview li:last-child a { border-bottom:none !important; }
+        .admin-panel .ui-listview .ui-btn-inner { border:none !important; }
         .admin-panel .ui-header h1 { color: #fff; }
     </style>
     <script>
@@ -783,26 +792,26 @@ else if( $_SESSION['user_level'] === 1 )
 			<a href="#rightPanel" class="ui-btn ui-btn-inline ui-icon-gear ui-btn-icon-right" style="color:#fff;">Opciones</a>
 		</div>
 		<div data-role="panel" id="menu" data-position="left" data-display="overlay" data-dismissible="true" class="admin-panel">
-			<div data-role="header"><h1>Menú</h1></div>
+			<div data-role="header"><h1>📋 Menú</h1><a href="#" data-rel="close" class="ui-btn ui-btn-right ui-icon-delete ui-btn-icon-notext" style="color:#fff;background:transparent !important;border:none !important;">Cerrar</a></div>
 			<div>
 				<ul data-role="listview" data-inset="true" data-shadow="false">
-					<li data-role="list-divider">Participantes</li>
-					<li><a href="#participantes" data-rel="close">Lista Participantes</a></li>
-					<li data-role="list-divider">Jueces</li>
-					<li><a href="#Jueces" data-rel="close">Lista Jueces</a></li>
-					<li data-role="list-divider">Torneos</li>
-					<li><a href="#torneos" data-rel="close">Crear Torneo</a></li>
-					<li><a href="#asignarParticipantes" data-rel="close">Asignar Participantes</a></li>
-					<li><a href="asignarJueces.php" data-rel="close">Asignar Jueces</a></li>
+					<li data-role="list-divider">👥 Participantes</li>
+					<li><a href="#participantes" data-rel="close">📋 Lista Participantes</a></li>
+					<li data-role="list-divider">⚖️ Jueces</li>
+					<li><a href="#Jueces" data-rel="close">📋 Lista Jueces</a></li>
+					<li data-role="list-divider">🏆 Torneos</li>
+					<li><a href="#torneos" data-rel="close">➕ Crear Torneo</a></li>
+					<li><a href="#asignarParticipantes" data-rel="close">👤 Asignar Participantes</a></li>
+					<li><a href="asignarJueces.php" data-rel="close">⚖️ Asignar Jueces</a></li>
 				</ul>
 			</div>
 		</div>
 		<div data-role="panel" id="rightPanel" data-position="right" data-display="overlay" data-dismissible="true" class="admin-panel">
-			<div data-role="header"><h1>Opciones</h1></div>
+			<div data-role="header"><h1>⚙️ Opciones</h1><a href="#" data-rel="close" class="ui-btn ui-btn-right ui-icon-delete ui-btn-icon-notext" style="color:#fff;background:transparent !important;border:none !important;">Cerrar</a></div>
 			<div>
 				<ul data-role="listview" data-inset="true">
-					<li><a href="#contacto" data-rel="close">Contacto</a></li>
-					<li><a href="logout.php">Salir</a></li>
+					<li><a href="#contacto" data-rel="close">📞 Contacto</a></li>
+					<li><a href="logout.php">🚪 Salir</a></li>
 				</ul>
 			</div>
 		</div>
