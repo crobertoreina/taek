@@ -34,8 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $token = bin2hex(random_bytes(32));
             $token_expiracion = date('Y-m-d H:i:s', strtotime('+24 hours'));
-            $stmt = $conexion->prepare("INSERT INTO escuelas (nombre, siglas, fecha_fundacion, pais, departamento, ciudad, direccion, instructor_nombre, instructor_grado, telefono, correo, user, pass, estado, token, token_expiracion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)");
-            $stmt->bind_param('sssssssssssssss', $nombre, $siglas, $fecha_fundacion, $pais, $departamento, $ciudad, $direccion, $instructor_nombre, $instructor_grado, $telefono, $correo, $correo, $pass, $token, $token_expiracion);
+            $stmt = $conexion->prepare("INSERT INTO escuelas (nombre, siglas, fecha_fundacion, pais, departamento, ciudad, direccion, instructor_nombre, instructor_grado, telefono, correo, user, pass, token_confirmacion, token_expiracion, estado) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $estado = 0; // Pendiente confirmación
+            $stmt->bind_param('sssssssssssssss', $nombre, $siglas, $fecha_fundacion, $pais, $departamento, $ciudad, $direccion, $instructor_nombre, $instructor_grado, $telefono, $correo, $correo, $pass, $token, $token_expiracion, $estado);
+            
             if ($stmt->execute()) {
                 require_once __DIR__ . '/mail_config.php';
                 if (enviarCorreoConfirmacion($correo, $nombre, $token)) {
@@ -43,15 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $success = 'Dojang registrado. No se pudo enviar el correo de confirmación. Contacta al administrador.';
                 }
-            } else {
-                $error = 'Error al registrar: ' . $stmt->error;
-            }
-            $stmt->close();
-        }
-        $check->close();
-    }
-}
-$conexion->close();
             } else {
                 $error = 'Error al registrar: ' . $stmt->error;
             }
@@ -80,11 +74,11 @@ $conexion->close();
         .reg-container .sub { text-align:center; color:#999; font-size:13px; margin-bottom:20px; }
         .reg-container .field { margin-bottom:14px; }
         .reg-container .field label { display:block; font-size:12px; font-weight:600; color:#555; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:4px; }
-        .reg-container .field input, .reg-container .field select { width:100%; padding:11px 13px; border:1.5px solid #e0e0e0; border-radius:10px; font-size:14px; background:#fafafa; box-sizing:border-box; transition:border-color 0.15s; }
+        .reg-container .field input, .reg-container .field select { width:100%; padding:11px 13px; border:1.5px solid #e0e0e0; border-radius:10px; font-size:14px; background:#fafafa; box-sizing:border-box; }
         .reg-container .field input:focus { border-color:#4caf50; outline:none; background:#fff; }
         .reg-container .field.half { display:inline-block; width:48%; }
         .reg-container .field.half + .field.half { margin-left:4%; }
-        .reg-container input[type="submit"] { width:100%; padding:14px; background:linear-gradient(135deg,#2e7d32,#4caf50); color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:1px; margin-top:8px; }
+        .reg-container input[type="submit"] { width:100%; padding:14px; background:linear-gradient(135deg,#2e7d32,#4caf50); color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:600; cursor:pointer; }
         .reg-container input[type="submit"]:hover { opacity:0.9; }
         .error { background:#ffebee; color:#c62828; padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:14px; }
         .success { background:#e8f5e9; color:#2e7d32; padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:14px; }
