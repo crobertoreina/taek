@@ -369,16 +369,20 @@ else if( $_SESSION['user_level'] === 1 )
                     type: 'POST',
                     url: 'toggleTorneo.php',
                     data: { id: id },
-                    dataType: 'json',
                     success: function(resp) {
-                        if (resp.success) {
-                            cargarDashboard();
-                        } else {
-                            alert('Error: ' + (resp.message || 'No se pudo cambiar el estado.'));
+                        try {
+                            var r = typeof resp === 'string' ? JSON.parse(resp) : resp;
+                            if (r.success) {
+                                cargarDashboard();
+                            } else {
+                                alert('Error: ' + (r.message || 'No se pudo cambiar el estado.'));
+                            }
+                        } catch(e) {
+                            alert('Respuesta inesperada del servidor:\n' + resp);
                         }
                     },
                     error: function(xhr) {
-                        alert('Error de conexión: ' + xhr.statusText);
+                        alert('Error HTTP ' + xhr.status + ': ' + xhr.statusText + '\n\n' + xhr.responseText);
                     }
                 });
             });
