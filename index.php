@@ -2,6 +2,10 @@
 // Iniciar sesión
 session_start();
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 // Verificar si el usuario está autenticado (por ejemplo, si hay una variable de sesión llamada 'user_id')
 if (!isset($_SESSION['user_id']) ) {
     // Si no hay sesión activa, redirigir al usuario a la página de inicio de sesión
@@ -37,7 +41,7 @@ $conn->close();
     <script src="lib/jquery.mobile-1.4.5.min.js"></script>
     <script>
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
+        navigator.serviceWorker.register('sw.js?v=5');
     }
     </script>
     <style>

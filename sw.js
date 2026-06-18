@@ -1,4 +1,4 @@
-const CACHE_NAME = 'taek-poomsae-v4';
+const CACHE_NAME = 'taek-poomsae-v5';
 const urlsToCache = [
   'lib/jquery-1.11.1.min.js',
   'lib/jquery.mobile-1.4.5.min.js',
