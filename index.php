@@ -125,13 +125,14 @@ $conn->close();
         .form-header-icon { text-align:center; font-size:36px; margin-bottom:4px; }
         .form-header-title { text-align:center; font-size:18px; font-weight:700; color:#2e7d32; margin-bottom:20px; }
         .collapsible-participante .ui-collapsible-heading-toggle { padding:14px 16px 14px 40px !important; font-size:14px !important; }
-        .collapsible-participante .ui-collapsible-content { padding:12px 16px !important; color:#333 !important; }
-        .collapsible-participante .ui-collapsible-content label { color:#555 !important; }
-        .collapsible-participante .ui-collapsible-content input,
-        .collapsible-participante .ui-collapsible-content select,
-        .collapsible-participante .ui-collapsible-content textarea { color:#333 !important; background:#fff !important; }
-        .collapsible-participante .ui-collapsible-content input[type="number"] { width:100% !important; }
-        .collapsible-participante .ui-collapsible-content .ui-select .ui-btn { color:#333 !important; background:#fff !important; }
+        .collapsible-participante .ui-collapsible-content { padding:16px 18px !important; color:#333 !important; background:#fff !important; border:1px solid #f0f0f0 !important; }
+        .collapsible-participante .ui-collapsible-content .ui-fieldcontain { margin:6px 0 14px 0 !important; border:none !important; padding:0 !important; }
+        .collapsible-participante .ui-collapsible-content .ui-fieldcontain label { font-size:11px !important; font-weight:600 !important; color:#555 !important; text-transform:uppercase !important; letter-spacing:0.8px !important; margin-bottom:5px !important; display:block !important; }
+        .collapsible-participante .ui-collapsible-content .ui-fieldcontain input,
+        .collapsible-participante .ui-collapsible-content .ui-fieldcontain select { border-radius:10px !important; border:1.5px solid #e0e0e0 !important; padding:11px 14px !important; font-size:14px !important; background:#fafafa !important; color:#333 !important; width:100% !important; box-shadow:none !important; }
+        .collapsible-participante .ui-collapsible-content .ui-fieldcontain input:focus,
+        .collapsible-participante .ui-collapsible-content .ui-fieldcontain select:focus { border-color:#4caf50 !important; background:#fff !important; box-shadow:0 0 0 3px rgba(76,175,80,0.1) !important; }
+        .collapsible-participante .ui-collapsible-content .ui-select .ui-btn { border-radius:10px !important; border:1.5px solid #e0e0e0 !important; background:#fafafa !important; color:#333 !important; }
         .btn-group { display:flex; justify-content:center; gap:10px; margin-top:14px; }
         .btn-group .button_mod.ui-btn { background:#4caf50 !important; border-color:#388e3c !important; color:#fff !important; text-shadow:none !important; }
         .btn-group .button_mod.ui-btn:hover { background:#388e3c !important; }
