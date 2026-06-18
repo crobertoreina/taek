@@ -1,6 +1,8 @@
 <?php
 // Iniciar sesión
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 
 // Verificar si el usuario está autenticado
 if(isset($_SESSION['user_id'])) {
@@ -20,6 +22,11 @@ if(isset($_SESSION['user_id'])) {
 	}
 }
 
+if(isset($_SESSION['escuela_id'])) {
+    header("Location: escuela_dashboard.php");
+    exit();
+}
+
 // Incluir el archivo de conexión
 include('conexion.php'); // Asegúrate de que 'conexion.php' esté correctamente incluído
 
@@ -36,7 +43,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Verificar si el usuario existe
+    // Verificar si el usuario existe como juez
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
@@ -59,7 +66,27 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
             $error_message = "Usuario o contraseña incorrectos.";
         }
     } else {
-        $error_message = "Usuario no encontrado.";
+        // Verificar si es una escuela (login con correo)
+        $q2 = $conexion->prepare("SELECT * FROM escuelas WHERE correo = ?");
+        $q2->bind_param("s", $username);
+        $q2->execute();
+        $r2 = $q2->get_result();
+        if ($r2->num_rows > 0) {
+            $row = $r2->fetch_assoc();
+            if (intval($row['estado']) !== 1) {
+                $error_message = "Tu cuenta está pendiente de activación. El administrador te notificará cuando esté lista.";
+            } elseif ($password === $row['pass']) {
+                $_SESSION['escuela_id'] = $row['id'];
+                $_SESSION['escuela_nombre'] = $row['nombre'];
+                header("Location: escuela_dashboard.php");
+                exit();
+            } else {
+                $error_message = "Usuario o contraseña incorrectos.";
+            }
+        } else {
+            $error_message = "Usuario no encontrado.";
+        }
+        $q2->close();
     }
 
     $stmt->close();
@@ -83,79 +110,61 @@ $conexion->close();
     </script>
 
     <style>
-        body { background: linear-gradient(135deg, #f5f5dc 0%, #e8f5e9 100%); }
-        #login-container {
-            width: 100%;
-            max-width: 350px;
-            padding: 30px 24px;
-            margin: 40px auto;
-            border-radius: 16px;
-            background: #ffffff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-top: 4px solid #4caf50;
-        }
-        #login-container h2 { color: #333; text-align: center; margin-bottom: 20px; font-size: 22px; }
-        #login-container input[type="text"],
-        #login-container input[type="password"] {
-            width: 100%;
-            padding: 14px;
-            margin: 8px 0 16px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background: #fafafa;
-            color: #333;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        #login-container input::placeholder { color: #aaa; }
-        #login-container input[type="submit"] {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #4caf50, #388e3c);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        #login-container input[type="submit"]:active { transform: scale(0.97); }
-        #error-message { text-align: center; margin-top: 12px; color: #e53935; font-size: 14px; }
-        .login-logo { text-align: center; margin-bottom: 10px; }
-        .login-logo img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 8px; border: 3px solid #ffeb3b; }
-        .login-logo h1 { color: #333; font-size: 24px; margin: 0; }
-        .login-logo h1 span { color: #4caf50; }
-        .login-logo p { color: #999; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background: linear-gradient(135deg, #f5f5dc 0%, #e8f5e9 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+        .login-wrapper { width:100%; max-width:400px; padding:20px; }
+        .login-header { background:linear-gradient(135deg,#2e7d32,#4caf50); border-radius:18px 18px 0 0; padding:28px 24px 20px; text-align:center; }
+        .login-header img { width:72px; height:72px; border-radius:50%; border:3px solid rgba(255,255,255,0.3); margin-bottom:10px; }
+        .login-header h1 { color:#fff; font-size:20px; font-weight:700; letter-spacing:0.5px; text-shadow:none; }
+        .login-header h1 span { color:#ffeb3b; }
+        .login-header p { color:rgba(255,255,255,0.8); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-top:4px; font-weight:500; }
+        .login-card { background:#fff; border-radius:0 0 18px 18px; padding:28px 26px 32px; box-shadow:0 8px 30px rgba(0,0,0,0.08); }
+        .login-card h2 { color:#333; font-size:17px; font-weight:600; text-align:center; margin-bottom:22px; letter-spacing:0.3px; }
+        .login-card .field { margin-bottom:18px; }
+        .login-card label { display:block; font-size:11px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; }
+        .login-card input { width:100%; padding:13px 14px; border:1.5px solid #e0e0e0; border-radius:10px; font-size:15px; background:#fafafa; transition:all 0.15s; }
+        .login-card input:focus { border-color:#4caf50; background:#fff; outline:none; box-shadow:0 0 0 3px rgba(76,175,80,0.1); }
+        .login-card input::placeholder { color:#bbb; }
+        .login-card input[type="submit"] { width:100%; padding:14px; background:linear-gradient(135deg,#2e7d32,#4caf50); color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; letter-spacing:1px; margin-top:4px; box-shadow:0 4px 12px rgba(76,175,80,0.25); transition:all 0.15s; }
+        .login-card input[type="submit"]:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(76,175,80,0.3); }
+        .login-card input[type="submit"]:active { transform:translateY(0); }
+        .error-msg { text-align:center; margin-top:14px; padding:10px 14px; background:#ffebee; color:#c62828; border-radius:10px; font-size:13px; font-weight:500; }
+        .login-footer { text-align:center; margin-top:18px; }
+        .login-footer a { color:#4caf50; font-size:13px; font-weight:600; text-decoration:none; transition:opacity 0.15s; }
+        .login-footer a:hover { opacity:0.8; }
+        .login-copy { text-align:center; margin-top:16px; color:#bbb; font-size:11px; letter-spacing:0.5px; }
     </style>
 </head>
 <body>
-    <div data-role="page" id="login">
-        <div data-role="content" style="padding:0;">
-            <div class="login-logo" style="padding-top:30px;">
-                <img src="images/sonbae.jpg" alt="Logo" />
-                <h1>태권도 <span>Poomsae</span></h1>
-                <p>Sistema de Evaluación</p>
-            </div>
-            <div id="login-container">
-                <h2>Iniciar Sesión</h2>
-                <form method="POST" action="login.php">
-                    <input type="text" name="username" id="username" placeholder="Usuario" required />
-                    <input name="password" type="password" id="password" placeholder="Contraseña" maxlength="10" required />
-                    <input name="Submit" type="submit" value="Ingresar" />
-                </form>
-
-                <?php
-                if (isset($error_message)) {
-                    echo "<div id='error-message'>$error_message</div>";
-                }
-                ?>
-            </div>
-            <div style="text-align:center; padding:20px; color:#555; font-size:12px;">
-                &copy; CRR 2025
-            </div>
+    <div class="login-wrapper">
+        <div class="login-header">
+            <img src="images/sonbae.jpg" alt="Logo" />
+            <h1>태권도 <span>Poomsae</span></h1>
+            <p>Sistema de Evaluaci&oacute;n</p>
         </div>
+        <div class="login-card">
+            <h2>Iniciar Sesi&oacute;n</h2>
+            <form method="POST" action="login.php" data-ajax="false">
+                <div class="field">
+                    <label for="username">Usuario / Correo</label>
+                    <input type="text" name="username" id="username" placeholder="Usuario o correo electrónico" required />
+                </div>
+                <div class="field">
+                    <label for="password">Contrase&ntilde;a</label>
+                    <input name="password" type="password" id="password" placeholder="Tu contrase&ntilde;a" maxlength="10" required />
+                </div>
+                <input name="Submit" type="submit" value="Ingresar" />
+            </form>
+            <?php
+            if (isset($error_message)) {
+                echo "<div class='error-msg'>$error_message</div>";
+            }
+            ?>
+        </div>
+        <div class="login-footer" style="display:flex;flex-direction:column;gap:8px;align-items:center;">
+            <a href="registro_escuela.php" style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#2e7d32,#4caf50);color:#fff;border-radius:12px;text-decoration:none;font-weight:600;font-size:13px;box-shadow:0 2px 8px rgba(76,175,80,0.2);">🏫 Registrar Escuela</a>
+        </div>
+        <div class="login-copy">&copy; CRR 2025</div>
     </div>
 </body>
 </html>
