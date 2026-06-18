@@ -145,14 +145,15 @@ $conn->close();
         .btn-group .ui-btn .ui-icon { background-color:rgba(255,255,255,0.3) !important; }
     </style>
     <script>
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+        }
+    </script>
+    <script>
         $(document).ready(function() {
             var escuelas = <?= json_encode($escData) ?>;
             var torneosData = <?= json_encode($torneosData) ?>;
-
-            function escapeHtml(str) {
-                if (!str) return '';
-                return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-            }
 
             function escuelaOpts(sel) {
                 var h = '<option value="">-- Sin escuela --</option>';
