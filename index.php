@@ -124,7 +124,7 @@ $conn->close();
         .elegant-form .ui-btn.ui-btn-cancel:hover { background:#eee !important; }
         .form-header-icon { text-align:center; font-size:36px; margin-bottom:4px; }
         .form-header-title { text-align:center; font-size:18px; font-weight:700; color:#2e7d32; margin-bottom:20px; }
-        .collapsible-participante .ui-collapsible-heading-toggle { padding:14px 16px !important; font-size:14px !important; }
+        .collapsible-participante .ui-collapsible-heading-toggle { padding:14px 16px 14px 40px !important; font-size:14px !important; }
         .collapsible-participante .ui-collapsible-content { padding:12px 16px !important; }
     </style>
     <script>
