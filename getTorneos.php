@@ -1,16 +1,29 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = require 'conexion.php';
+try {
+    $conn = new mysqli('localhost', 'root', '', 'taekdb');
+    if ($conn->connect_error) {
+        throw new Exception('Error de conexión BD: ' . $conn->connect_error);
+    }
+    $conn->set_charset('utf8');
 
-$query = "SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE activo END as estado_efectivo FROM torneos ORDER BY fecha DESC";
-$result = $conn->query($query);
+    $check = $conn->query("SHOW COLUMNS FROM torneos LIKE 'activo'");
+    if (!$check || $check->num_rows === 0) {
+        $conn->query("ALTER TABLE torneos ADD COLUMN activo tinyint(1) NOT NULL DEFAULT 1 AFTER ciudad");
+    }
 
-$torneos = [];
-while ($row = $result->fetch_assoc()) {
-    $torneos[] = $row;
+    $query = "SELECT *, CASE WHEN fecha < CURDATE() THEN 0 ELSE COALESCE(activo, 1) END as estado_efectivo FROM torneos ORDER BY fecha DESC";
+    $result = $conn->query($query);
+
+    $torneos = [];
+    while ($row = $result->fetch_assoc()) {
+        $torneos[] = $row;
+    }
+
+    echo json_encode($torneos);
+    $conn->close();
+} catch (Exception $e) {
+    echo json_encode(['error' => $e->getMessage()]);
 }
-
-echo json_encode($torneos);
-$conn->close();
 ?>

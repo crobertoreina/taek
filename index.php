@@ -105,191 +105,11 @@ else if( $_SESSION['user_level'] === 1 )
                     url: 'getParticipantesTodos.php', // Archivo PHP que devuelve los participantes
                     success: function(data) {
                         try {
-                            var participantes = typeof data === 'string' ? JSON.parse(data) : data;
-                            var participanteList = $('#listParticipantes');
-                            participanteList.empty(); // Limpiar la lista de participantes antes de agregar nuevos
-
-                            if (Array.isArray(participantes)) {
-                                participantes.forEach(function(participante) {
-                                    // Crear un collapsible para cada participante
-                                    participanteList.append(
-                                        $('<div data-role="collapsible" data-theme="a" data-content-theme="a" id="participante' + participante.id + '">' +
-                                            '<h3>' + participante.nombre + ' ' + participante.apellido + '</h3>' +
-                                            '<form>' +
-                                                '<div data-role="fieldcontain">' +
-                                                    '<label for="id' + participante.id + '">ID:</label>' +
-                                                    '<input type="text" id="id' + participante.id + '" value="' + participante.id + '" disabled>' +
-                                                '</div>' +
-                                                '<div data-role="fieldcontain">' +
-                                                    '<label for="nombre' + participante.id + '">Nombre:</label>' +
-                                                    '<input type="text" id="nombre' + participante.id + '" value="' + participante.nombre + '" >' +
-                                                '</div>' +
-                                                '<div data-role="fieldcontain">' +
-                                                    '<label for="apellido' + participante.id + '">Apellido:</label>' +
-                                                    '<input type="text" id="apellido' + participante.id + '" value="' + participante.apellido + '" >' +
-                                                '</div>' +
-                                                '<div data-role="fieldcontain">' +
-                                                    '<label for="telefono' + participante.id + '">Telefono:</label>' +
-                                                    '<input type="text" id="telefono' + participante.id + '" value="' + participante.telefono + '" >' +
-                                                '</div>' +
-                                                '<div data-role="fieldcontain">' +
-                                                    '<label for="ciudad' + participante.id + '">Ciudad:</label>' +
-                                                    '<input type="text" id="ciudad' + participante.id + '" value="' + participante.ciudad + '" >' +
-                                                '</div>' +
-                                                '<center><a href="#" data-role="button" data-inline="true" data-theme="a" class="button_mod" data-id="' + participante.id + '">Modificar</a>' +
-                                                '<a href="#aviso_borrar" data-role="button" data-inline="true" data-position="center" data-theme="a" class="button_del" data-rel="dialog" data-transition="flip" data-id="' + participante.id + '">Eliminar</a></center>' +
-                                            '</form>' +
-                                        '</div>')
-                                    );
-                                });
-
-                                // Refrescar el collapsible para aplicar el estilo correctamente
-                                participanteList.collapsibleset('refresh');
-                                
-                                // Refrescar solo los botones de Modificar y Eliminar
-                                setTimeout(function() {
-                                    $('#listParticipantes .button_mod').button();  // Refresca los botones Modificar
-                                    $('#listParticipantes .button_del').button();  // Refresca los botones Eliminar
-                                }, 100);
-
-                                $('input[type="text"]').textinput();  // Refresca los campos de texto
-                            }
-                        } catch (e) {
-                            console.error("Error al procesar participantes:", e);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error en la solicitud de participantes:', error);
-                    }
-                });
-            }
-
-            // Cargar los participantes al cargar la página
-            cargarParticipantes();
-
-            // Evento para manejar el clic en el botón Modificar
-            $(document).on('click', '.button_mod', function() {
-                var idParticipante = $(this).data('id');
-                // Capturamos los nuevos valores que el usuario ha editado
-                var nombre = $('#nombre' + idParticipante).val();
-                var apellido = $('#apellido' + idParticipante).val();
-                var telefono = $('#telefono' + idParticipante).val();
-                var ciudad = $('#ciudad' + idParticipante).val();
-
-                // Llamar a la función para modificar el participante
-                modificarParticipante(idParticipante, nombre, apellido, telefono, ciudad);
-            });
-
-            // Función para modificar el participante
-            function modificarParticipante(id, nombre, apellido, telefono, ciudad) {
-                $.ajax({
-                    type: 'POST',
-                    url: 'modificarParticipante.php',  // Archivo PHP que procesa la modificación
-                    data: {
-                        id: id,
-                        nombre: nombre,
-                        apellido: apellido,
-                        telefono: telefono,
-                        ciudad: ciudad
-                    },
-                    success: function(response) {
-                        console.log('Participante modificado:', response);
-                        // Recargar la lista de participantes
-                        cargarParticipantes();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error al modificar el participante:', error);
-                    }
-                });
-            }
-
-            // Evento para manejar el clic en el botón Eliminar
-            $(document).on('click', '.button_del', function() {
-                var idParticipante = $(this).data('id');
-                // Mostrar el diálogo de confirmación para eliminar al participante
-                console.log('Eliminar participante con ID:', idParticipante);
-                $('#btn_confirmar_eliminar').data('id', idParticipante);
-            });
-
-            // Confirmar eliminación
-			$('#btn_confirmar_eliminar').on('click', function() {
-				var idParticipante = $(this).data('id');
-				
-				// Realizar la solicitud AJAX para eliminar el participante
-				$.ajax({
-					type: 'POST',
-					url: 'eliminarParticipante.php', // Archivo PHP para eliminar al participante
-					data: { id: idParticipante },
-					success: function(response) {
-						console.log('Participante eliminado:', response);
-						// Recargar la lista de participantes
-						cargarParticipantes();
-
-						// Regresar a la página de la lista de participantes
-						$.mobile.changePage('#participantes', { transition: 'pop' });
-					},
-					error: function(xhr, status, error) {
-						console.error('Error al eliminar el participante:', error);
-					}
-				});
-			});
-
-
-            // Función para agregar un nuevo participante
-            $('#form_agregar_participante').on('submit', function(e) {
-                e.preventDefault();
-                
-                var nombre = $('#nombre').val();
-                var apellido = $('#apellido').val();
-                var telefono = $('#telefono').val();
-                var ciudad = $('#ciudad').val();
-
-                // Llamar a la función para agregar el participante
-                agregarParticipante(nombre, apellido, telefono, ciudad);
-            });
-
-            // Función para agregar el participante
-            function agregarParticipante(nombre, apellido, telefono, ciudad) {
-                $.ajax({
-                    type: 'POST',
-                    url: 'agregarParticipante.php',  // Archivo PHP que procesa la adición del participante
-                    data: {
-                        nombre: nombre,
-                        apellido: apellido,
-                        telefono: telefono,
-                        ciudad: ciudad
-                    },
-                    success: function(response) {
-                        console.log('Participante agregado:', response);
-						
-						 // Limpiar los campos del formulario
-						$('#nombre').val('');
-						$('#apellido').val('');
-						$('#telefono').val('');
-						$('#ciudad').val('');
-
-						 // Recargar la lista de participantes
-                        cargarParticipantes();
-						
-                        // Cerrar el formulario de agregar participante
-                        $.mobile.changePage('#participantes', { transition: 'pop' });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error al agregar el participante:', error);
-                    }
-                });
-            }
-        });
-    </script>
-	<script>
-		$(document).ready(function() {
-            function cargarDashboard() {
-                $.ajax({
-                    type: 'GET',
-                    url: 'getTorneos.php',
-                    success: function(data) {
-                        try {
                             var torneos = typeof data === 'string' ? JSON.parse(data) : data;
+                            if (torneos.error) {
+                                $('#dashboardLoading').html('Error: ' + torneos.error);
+                                return;
+                            }
                             var html = '';
                             var activos = [];
                             var inactivos = [];
@@ -355,8 +175,8 @@ else if( $_SESSION['user_level'] === 1 )
                             $('#dashboardLoading').html('Error al cargar torneos.');
                         }
                     },
-                    error: function() {
-                        $('#dashboardLoading').html('Error de conexi&oacute;n.');
+                    error: function(xhr) {
+                        $('#dashboardLoading').html('Error de conexi&oacute;n. ' + xhr.status + ': ' + xhr.statusText);
                     }
                 });
             }
