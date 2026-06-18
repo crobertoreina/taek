@@ -130,10 +130,10 @@ $conn->close();
         .collapsible-participante .ui-collapsible-content input,
         .collapsible-participante .ui-collapsible-content select,
         .collapsible-participante .ui-collapsible-content textarea { color:#333 !important; background:#fff !important; }
-        .btn-elegant-mod { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:linear-gradient(135deg,#2e7d32,#4caf50); color:#fff; box-shadow:0 2px 8px rgba(76,175,80,0.2); }
-        .btn-elegant-mod:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(76,175,80,0.3); }
-        .btn-elegant-del { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:linear-gradient(135deg,#c62828,#e53935); color:#fff; box-shadow:0 2px 8px rgba(198,40,40,0.2); }
-        .btn-elegant-del:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(198,40,40,0.3); }
+        .btn-elegant-mod { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:400; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:#388e3c; color:#fff; }
+        .btn-elegant-mod:hover { background:#2e7d32; transform:translateY(-1px); }
+        .btn-elegant-del { display:inline-flex; align-items:center; gap:6px; padding:9px 22px; border-radius:22px; font-size:13px; font-weight:400; text-decoration:none; transition:all 0.15s ease; border:none; cursor:pointer; background:#c62828; color:#fff; }
+        .btn-elegant-del:hover { background:#b71c1c; transform:translateY(-1px); }
         .btn-group { display:flex; justify-content:center; gap:10px; margin-top:14px; }
     </style>
     <script>
